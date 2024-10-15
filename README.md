@@ -1,12 +1,8 @@
 # Furry ECS
 
----
-
 Furry ECS is a TypeScript Entity-component-system library
 
 ## Install
-
----
 
 - npm
 
@@ -21,8 +17,6 @@ Furry ECS is a TypeScript Entity-component-system library
   ```
 
 ## Example
-
----
 
 ```typescript
 import ECS from "furry-ecs"
