@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+    "paths": {
+      "#*": ["src/*"]
+    },
+    "typeRoots": ["index.d.ts"],
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "declaration": false,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "useUnknownInCatchVariables": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noImplicitUseStrict": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noStrictGenericChecks": false,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["index.ts", "src/**/*"]
+}
