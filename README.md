@@ -47,9 +47,9 @@ const system1 = ECS.defineSystem(world => {
   }
 })
 const system2 = ECS.defineSystem((world, args) => {
-  let data: number | undefined = args[0]
+  let data: unknown = args[0]
 
-  if (data) {
+  if (typeof data === "number") {
     data++
   }
 })
@@ -64,3 +64,7 @@ const time = performance.now()
 const args = [0]
 ECS.update(world, delta, time, ...args)
 ```
+
+## Documentation
+
+Check out the [Documentation](DOCS.md) for more details of each member
