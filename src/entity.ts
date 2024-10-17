@@ -11,6 +11,12 @@ export default class Entity {
     this.recycledEID.add(EID)
   }
 
+  public static reset(): void {
+    this.EID = 0
+    this.nextEID = 1
+    this.recycledEID.clear()
+  }
+
   private static getNextEID(): number {
     if (this.recycledEID.size) {
       const EID = this.recycledEID.values().next().value
