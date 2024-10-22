@@ -28,13 +28,14 @@ export default class World {
   }
 
   public addComponent(entity: Entity, component: Component): void {
-    if (!this.entities.has(entity)) return
-    const data = this.components.get(component) || new Map<Entity, QueryModifier>()
-    data.set(entity, QueryModifier.ADDED)
-    this.deferredChanges.added.components.set(component, data)
+    if (this.entities.has(entity) || this.deferredChanges.added.entities.has(entity)) {
+      const data: Map<Entity, QueryModifier> = new Map(this.components.get(component) || this.deferredChanges.added.components.get(component) || [])
+      data.set(entity, QueryModifier.ADDED)
+      this.deferredChanges.added.components.set(component, data)
+    }
   }
 
-  public addSystem(system: System, args: Array<unknown>): void {
+  public addSystem(system: System, args?: Array<unknown>): void {
     this.deferredChanges.added.systems.set(system, system.onStart(this, args))
   }
 
@@ -89,9 +90,8 @@ export default class World {
     }
     for (let [component, data] of addedComponents.entries()) {
       for (let entity of data.keys()) {
-        if (!this.components.has(component)) continue
-        const currentData = this.components.get(component)!
-        if (currentData.get(entity) === QueryModifier.ADDED) {
+        const currentData = this.components.get(component)
+        if (currentData?.get(entity) === QueryModifier.ADDED) {
           data.set(entity, QueryModifier.ACTIVE)
         }
       }
@@ -100,13 +100,16 @@ export default class World {
     }
     for (let [component, data] of removedComponents.entries()) {
       for (let entity of data.keys()) {
-        if (!this.components.has(component)) continue
-        const currentData = this.components.get(component)!
-        if (currentData.get(entity) === QueryModifier.REMOVED) {
+        const currentData = this.components.get(component)
+        if (currentData?.get(entity) === QueryModifier.REMOVED) {
           data.delete(entity)
         }
       }
-      this.components.set(component, data)
+      if (data.size === 0) {
+        this.components.delete(component)
+      } else {
+        this.components.set(component, data)
+      }
       this.hasChanged = true
     }
     for (let [system, systemFunction] of addedSystems.entries()) {
