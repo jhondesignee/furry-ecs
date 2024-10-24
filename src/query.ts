@@ -8,16 +8,28 @@ export default class Query {
   private readonly includeComponents: Set<Component>
   private readonly excludeComponents: Set<Component>
   private entities: Map<Entity, QueryModifier>
+  private updated: boolean
 
   constructor(config: QueryConfig) {
     this.includeComponents = new Set(config.include)
     this.excludeComponents = new Set(config.exclude)
     this.entities = new Map()
+    this.updated = false
   }
 
   public exec(world: World, modifier?: QueryModifier): Array<Entity> {
     if (world.hasChanged) {
       this.entities = this.filterEntitiesByComponent(world)
+      this.updated = false
+    } else if (!this.updated) {
+      for (const [entity, modifier] of this.entities) {
+        if (modifier === QueryModifier.ADDED) {
+          this.entities.set(entity, QueryModifier.ACTIVE)
+        } else if (modifier === QueryModifier.REMOVED) {
+          this.entities.delete(entity)
+        }
+      }
+      this.updated = true
     }
     if (modifier !== undefined) {
       return this.filterEntitiesByModifier(modifier)
@@ -27,18 +39,20 @@ export default class Query {
 
   private filterEntitiesByComponent(world: World): Map<Entity, QueryModifier> {
     const filteredEntities = new Map<Entity, QueryModifier>()
-    for (let includedComponent of this.includeComponents) {
-      if (!world.components.has(includedComponent)) continue
-      const data = world.components.get(includedComponent)!
-      for (let [entity, modifier] of data.entries()) {
-        filteredEntities.set(entity, modifier)
+    for (const includedComponent of this.includeComponents) {
+      if (world.components.has(includedComponent)) {
+        const data = world.components.get(includedComponent)!
+        for (const [entity, modifier] of data) {
+          filteredEntities.set(entity, modifier)
+        }
       }
     }
-    for (let excludedComponent of this.excludeComponents) {
-      if (!world.components.has(excludedComponent)) continue
-      const data = world.components.get(excludedComponent)!
-      for (let entity of data.keys()) {
-        filteredEntities.delete(entity)
+    for (const excludedComponent of this.excludeComponents) {
+      if (world.components.has(excludedComponent)) {
+        const data = world.components.get(excludedComponent)!
+        for (const entity of data.keys()) {
+          filteredEntities.delete(entity)
+        }
       }
     }
     return filteredEntities
@@ -46,7 +60,7 @@ export default class Query {
 
   private filterEntitiesByModifier(modifier: QueryModifier): Array<Entity> {
     const filteredEntities = new Array<Entity>()
-    for (let [entity, entityModifier] of this.entities) {
+    for (const [entity, entityModifier] of this.entities) {
       if (entityModifier === modifier) {
         filteredEntities.push(entity)
       }

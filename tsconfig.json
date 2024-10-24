@@ -35,5 +35,5 @@
     "noStrictGenericChecks": false,
     "verbatimModuleSyntax": true
   },
-  "include": ["index.ts", "src/**/*"]
+  "include": ["index.ts", "src/**/*", "tests/**/*"]
 }
