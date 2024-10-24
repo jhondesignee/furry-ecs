@@ -3,6 +3,7 @@ import World from "#world"
 import Entity from "#entity"
 import Component from "#component"
 import System from "#system"
+import { QueryModifier } from "#constants"
 
 describe("World class test", () => {
   describe("Entity addition test", () => {
@@ -21,6 +22,11 @@ describe("World class test", () => {
       expect(world.entities.size).toBe(0)
       world.update(0, 0)
       expect(world.entities.size).toBe(1)
+    })
+    test("Added entities should have the ADDED query modifier for one frame", () => {
+      expect(world.entities.get(entity1)).toBe(QueryModifier.ADDED)
+      world.update(0, 0)
+      expect(world.entities.get(entity1)).toBe(QueryModifier.ACTIVE)
     })
     test("Entities should be unique", () => {
       world.addEntity(entity1)
@@ -50,7 +56,7 @@ describe("World class test", () => {
       component2 = new Component({})
     })
 
-    test("Added component to entities should be deferred only if the entity exists in the world", () => {
+    test("Added components should be deferred only if the entity exists in the world", () => {
       world.addComponent(entity1, component1)
       expect(world.components.size).toBe(0)
       world.update(0, 0)
@@ -61,6 +67,11 @@ describe("World class test", () => {
       world.update(0, 0)
       expect(world.components.size).toBe(1)
       expect(world.components.get(component1)?.size).toBe(1)
+    })
+    test("Entities in the components should have the ADDED query modifier for one frame after addition", () => {
+      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.ADDED)
+      world.update(0, 0)
+      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.ACTIVE)
     })
     test("Added component data should be created if they do not exist", () => {
       world.addComponent(entity1, component2)
@@ -78,7 +89,7 @@ describe("World class test", () => {
       expect(world.components.get(component1)?.size).toBe(2)
     })
   })
-  describe("Systems should be added after the update method call", () => {
+  describe("System addition test", () => {
     let world: World
     let system1: System
     let system2: System
@@ -126,7 +137,12 @@ describe("World class test", () => {
       world.removeEntity(entity1)
       expect(world.entities.size).toBe(2)
       world.update(0, 0)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.size).toBe(2)
+    })
+    test("Removed entities should have the REMOVED query modifier for one frame", () => {
+      expect(world.entities.get(entity1)).toBe(QueryModifier.REMOVED)
+      world.update(0, 0)
+      expect(world.entities.get(entity1)).toBeUndefined()
     })
     test("Skip if the entity does not exist", () => {
       world.removeEntity(entity1)
@@ -135,6 +151,7 @@ describe("World class test", () => {
       expect(world.entities.size).toBe(1)
       world.removeEntity(entity2)
       expect(world.entities.size).toBe(1)
+      world.update(0, 0)
       world.update(0, 0)
       expect(world.entities.size).toBe(0)
     })
@@ -170,10 +187,18 @@ describe("World class test", () => {
       expect(world.components.get(component2)?.size).toBe(1)
       world.update(0, 0)
       expect(world.components.size).toBe(2)
+      expect(world.components.get(component1)?.size).toBe(2)
+      expect(world.components.get(component2)?.size).toBe(1)
+    })
+    test("Entities in the components should have the REMOVED query modifier for one frame after subtraction", () => {
+      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.REMOVED)
+      world.update(0, 0)
+      expect(world.components.get(component1)?.get(entity1)).toBeUndefined()
+      expect(world.components.size).toBe(2)
       expect(world.components.get(component1)?.size).toBe(1)
       expect(world.components.get(component2)?.size).toBe(1)
     })
-    test("Skip if entity or component does not exist on the world", () => {
+    test("Skip if entity does not exist on the world", () => {
       world.removeComponent(entity2, component2)
       world.update(0, 0)
       expect(world.components.size).toBe(2)
@@ -188,10 +213,12 @@ describe("World class test", () => {
     test("Empty components should be deleted", () => {
       world.removeComponent(entity1, component2)
       world.update(0, 0)
+      world.update(0, 0)
       expect(world.components.size).toBe(1)
       expect(world.components.get(component1)?.size).toBe(1)
       expect(world.components.get(component2)?.size).toBeUndefined()
       world.removeComponent(entity2, component1)
+      world.update(0, 0)
       world.update(0, 0)
       expect(world.components.size).toBe(0)
       expect(world.components.get(component1)?.size).toBeUndefined()
@@ -229,7 +256,7 @@ describe("World class test", () => {
       expect(world.systems.size).toBe(0)
     })
   })
-  describe("World data should be destroyed", () => {
+  describe("World data deletion test", () => {
     let world: World
     let entity1: Entity
     let entity2: Entity
@@ -343,6 +370,69 @@ describe("World class test", () => {
         }
       }
       expect(isSorted).toBeTruthy()
+    })
+  })
+  describe("Same frame changes test", () => {
+    let world: World
+    let entity1: Entity
+    let entity2: Entity
+    let entity3: Entity
+    let component1: Component
+    let component2: Component
+    let system: System
+
+    beforeAll(() => {
+      world = new World()
+      entity1 = new Entity()
+      entity2 = new Entity()
+      entity3 = new Entity()
+      component1 = new Component({})
+      component2 = new Component({})
+      system = new System(() => {})
+    })
+
+    test("Entity changes should be done immediately", () => {
+      world.addEntity(entity1)
+      world.removeEntity(entity1)
+      expect(world.entities.size).toBe(0)
+      world.update(0, 0)
+      expect(world.entities.size).toBe(0)
+    })
+    test("Component changes should be done immediately", () => {
+      world.addEntity(entity1)
+      world.addEntity(entity2)
+      world.addEntity(entity3)
+      world.addComponent(entity1, component1)
+      world.removeComponent(entity1, component1)
+      expect(world.components.size).toBe(0)
+      world.update(0, 0)
+      expect(world.components.size).toBe(0)
+      world.addComponent(entity1, component1)
+      world.update(0, 0)
+      expect(world.components.size).toBe(1)
+      expect(world.components.get(component1)?.size).toBe(1)
+      world.addComponent(entity2, component1)
+      world.removeComponent(entity2, component1)
+      expect(world.components.get(component1)?.size).toBe(1)
+      world.update(0, 0)
+      expect(world.components.get(component1)?.size).toBe(1)
+    })
+    test("System changes should be done immediately", () => {
+      world.addSystem(system)
+      world.removeSystem(system)
+      expect(world.systems.size).toBe(0)
+      world.update(0, 0)
+      expect(world.systems.size).toBe(0)
+    })
+    test("Removed entities should also be removed from its components", () => {
+      world.addComponent(entity1, component2)
+      world.removeEntity(entity1)
+      world.removeEntity(entity3)
+      expect(world.components.size).toBe(1)
+      world.update(0, 0)
+      expect(world.components.size).toBe(1)
+      world.update(0, 0)
+      expect(world.components.size).toBe(0)
     })
   })
 })
