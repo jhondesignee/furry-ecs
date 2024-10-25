@@ -30,51 +30,84 @@ export default class ECS {
     return new Query(config)
   }
 
-  public static addEntity(world: World, entities: Array<Entity>): void {
-    for (let entity of entities) {
-      world.addEntity(entity)
-    }
-  }
-
-  public static addComponent(world: World, entities: Array<Entity>, components: Array<Component>): void {
-    for (let entity of entities) {
-      for (let component of components) {
-        world.addComponent(entity, component)
+  public static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    for (const world of worldArray) {
+      for (const entity of entityArray) {
+        world.addEntity(entity)
       }
     }
   }
 
-  public static addSystem(world: World, systems: Array<System>, ...args: Array<unknown>): void {
-    for (let system of systems) {
-      world.addSystem(system, args)
-    }
-  }
-
-  public static update(world: World, delta: number, time: number): void {
-    world.update(delta, time)
-  }
-
-  public static removeEntity(world: World, entities: Array<Entity>): void {
-    for (let entity of entities) {
-      world.removeEntity(entity)
-    }
-  }
-
-  public static removeComponent(world: World, entities: Array<Entity>, components: Array<Component>): void {
-    for (let entity of entities) {
-      for (let component of components) {
-        world.removeComponent(entity, component)
+  public static addComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    for (const world of worldArray) {
+      for (const entity of entityArray) {
+        for (const component of componentArray) {
+          world.addComponent(entity, component)
+        }
       }
     }
   }
 
-  public static removeSystem(world: World, systems: Array<System>): void {
-    for (let system of systems) {
-      world.removeSystem(system)
+  public static addSystem(worlds: World | Array<World>, systems: System | Array<System>, ...args: Array<unknown>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const systemArray: Array<System> = Array.isArray(systems) ? systems : [systems]
+    for (const world of worldArray) {
+      for (const system of systemArray) {
+        world.addSystem(system, args)
+      }
     }
   }
 
-  public static destroyWorld(world: World): void {
-    world.destroy()
+
+  public static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    for (const world of worldArray) {
+      for (const entity of entityArray) {
+        world.removeEntity(entity)
+      }
+    }
+  }
+
+  public static removeComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    for (const world of worldArray) {
+      for (const entity of entityArray) {
+        for (const component of componentArray) {
+          world.removeComponent(entity, component)
+        }
+      }
+    }
+  }
+
+  public static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    const systemArray: Array<System> = Array.isArray(systems) ? systems : [systems]
+    for (const world of worldArray) {
+      for (const system of systemArray) {
+        world.removeSystem(system)
+      }
+    }
+  }
+  
+  public static update(worlds: World | Array<World>, delta: number, time: number): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    for (const world of worldArray) {
+      world.update(delta, time)
+    }
+  }
+
+  public static destroyWorld(worlds: World | Array<World>): void {
+    const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
+    for (const world of worldArray) {
+      world.destroy()
+    }
   }
 }

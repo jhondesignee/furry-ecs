@@ -12,8 +12,7 @@ export default class Entity {
   }
 
   public static reset(): void {
-    this.EID = 0
-    this.nextEID = 1
+    this.nextEID = 0
     this.recycledEID.clear()
   }
 
