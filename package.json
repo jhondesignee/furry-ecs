@@ -4,14 +4,13 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "license": "MIT",
   "scripts": {
     "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "test": "vitest --config vitest.config.ts",
-    "coverage": "vitest --coverage --config vitest.config.ts"
+    "coverage": "vitest --coverage --config vitest.config.ts",
+    "tc": "tsc --noEmit"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
