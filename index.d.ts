@@ -42,10 +42,10 @@ declare module "furry-ecs" {
     public static addEntity(world: World, entities: Array<Entity>): void
     public static addComponent(world: World, entities: Array<Entity>, components: Array<Component>): void
     public static addSystem(world: World, systems: Array<System>, ...args: Array<unknown>): void
-    public static update(world: World, delta: number, time: number): void
     public static removeEntity(world: World, entities: Array<Entity>): void
     public static removeComponent(world: World, entities: Array<Entity>, components: Array<Component>): void
     public static removeSystem(world: World, systems: Array<System>): void
+    public static update(world: World, delta: number, time: number): void
     public static destroyWorld(world: World): void
   }
 
@@ -61,6 +61,7 @@ declare module "furry-ecs" {
 
     constructor()
     public static recycleEID(EID: number): void
+    public static reset(): void
     private static getNextEID(): number
   }
 
@@ -99,10 +100,10 @@ declare module "furry-ecs" {
     public addEntity(entity: Entity): void
     public addComponent(entity: Entity, component: Component): void
     public addSystem(system: System, args: Array<unknown>): void
-    public update(delta: number, time: number): void
     public removeEntity(entity: Entity): void
     public removeComponent(entity: Entity, component: Component): void
     public removeSystem(system: System): void
+    public update(delta: number, time: number): void
     public destroy(): void
     private applyDeferredChanges(): void
     private clearDeferredChanges(): void

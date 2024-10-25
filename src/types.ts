@@ -6,7 +6,7 @@ export type SystemFunction = (world: World, args?: Array<unknown>) => SystemUpda
 
 export interface QueryConfig {
   include: Array<Component>
-  exclude: Array<Component>
+  exclude?: Array<Component>
 }
 
 export interface DeferredChanges<EntitySet, ComponentMap, SystemMap> {
