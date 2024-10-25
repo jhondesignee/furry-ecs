@@ -67,7 +67,8 @@ export default class World {
     ) {
       const data: Map<Entity, QueryModifier> = new Map([
         ...(this.components.get(component) || []),
-        ...(this.deferredChanges.added.components.get(component) || [])
+        ...(this.deferredChanges.added.components.get(component) || []),
+        ...(this.deferredChanges.removed.components.get(component) || [])
       ])
       if (this.deferredChanges.added.components.get(component)?.has(entity)) {
         data.delete(entity)
