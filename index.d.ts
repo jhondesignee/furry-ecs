@@ -4,7 +4,7 @@ declare module "furry-ecs" {
 
   export interface QueryConfig {
     include: Array<Component>
-    exclude: Array<Component>
+    exclude?: Array<Component>
   }
 
   interface DeferredChanges<EntitySet, ComponentMap, SystemMap> {
@@ -39,13 +39,13 @@ declare module "furry-ecs" {
     public static defineComponent<Schema extends Record<string, ComponentType>>(schema: Schema): Component<Schema>
     public static defineSystem(systemFunction: SystemFunction): System
     public static defineQuery(config: QueryConfig): Query
-    public static addEntity(world: World, entities: Array<Entity>): void
-    public static addComponent(world: World, entities: Array<Entity>, components: Array<Component>): void
-    public static addSystem(world: World, systems: Array<System>, ...args: Array<unknown>): void
-    public static removeEntity(world: World, entities: Array<Entity>): void
-    public static removeComponent(world: World, entities: Array<Entity>, components: Array<Component>): void
-    public static removeSystem(world: World, systems: Array<System>): void
-    public static update(world: World, delta: number, time: number): void
+    public static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void
+    public static addComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): void
+    public static addSystem(worlds: World | Array<World>, systems: System | Array<System>, ...args: Array<unknown>): void
+    public static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void
+    public static removeComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): void
+    public static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): void
+    public static update(worlds: World | Array<World>, delta: number, time: number): void
     public static destroyWorld(world: World): void
   }
 
@@ -90,7 +90,7 @@ declare module "furry-ecs" {
   }
 
   export class World {
-    public readonly entities: Set<Entity>
+    public readonly entities: Map<Entity, QueryModifier>
     public readonly components: Map<Component, Map<Entity, QueryModifier>>
     public readonly systems: Map<System, SystemUpdateFunction | void>
     public hasChanged: boolean

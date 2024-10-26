@@ -66,7 +66,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Defines all the components to be included in the entity query result
 
-  - **exclude: Array\<Component\>**
+  - **exclude?: Array\<Component\>**
 
     Defines all the components to be excluded from the entity query result
 
@@ -172,35 +172,35 @@ here are the type definition and description for all the members of Furry ECS li
 
     Creates a query instance
 
-  - **_public static_ addEntity(world: World, entities: Array\<Entity\>): void**
+  - **_public static_ addEntity(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>): void**
 
     Adds entities to the world
 
-  - **_public static_ addComponent(world: World, entities: Array\<Entity\>, components: Array\<Component\>): void**
+  - **_public static_ addComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): void**
 
     Adds components to entities in the world
 
-  - **_public static_ addSystem(world: World, systems: Array\<System\>, ...args: Array\<unknown\>): void**
+  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>, ...args: Array\<unknown\>): void**
 
     Adds systems to the world
 
-  - **_public static_ update(world: World, delta: number, time: number): void**
+  - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number): void**
 
     Updates the world
 
-  - **_public static_ removeEntity(world: World, entities: Array\<Entity\>): void**
+  - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): void**
 
     Removes entities from the world
 
-  - **_public static_ removeComponent(world: World, entities: Array\<Entity\>, components: Array\<Component\>): void**
+  - **_public static_ removeComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): void**
 
     Removes components from entities in the world
 
-  - **_public static_ removeSystem(world: World, systems: Array\<System\>): void**
+  - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): void**
 
     Removes systems from the world
 
-  - **_public static_ destroyWorld(world: World): void**
+  - **_public static_ destroyWorld(worlds: World | Array\<World\>): void**
 
     Erases all the data from the world
 
@@ -227,6 +227,10 @@ here are the type definition and description for all the members of Furry ECS li
   - **_public static_ recycleEID(EID: number): void**
 
     Releases an EID to be reused
+
+  - **_public static_ reset(): void**
+
+    Reset the EID counter and clear the recycledEID
 
   - **_private static_ getNextEID(): number**
 
@@ -318,7 +322,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **_public readonly_ entities: Set\<Entity\>**
+  - **_public readonly_ entities: Map\<Entity, QueryModifier\>**
 
     Stores entities added to the world
 
