@@ -1,5 +1,10 @@
 # Furry ECS
 
+![GitHub package.json version](https://img.shields.io/github/package-json/v/jhondesignee/furry-ecs)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/furry-ecs)
+![Codecov](https://img.shields.io/codecov/c/github/jhondesignee/furry-ecs)
+![GitHub License](https://img.shields.io/github/license/jhondesignee/furry-ecs)
+
 Furry ECS is a TypeScript Entity-component-system library
 
 ## Install
@@ -7,10 +12,22 @@ Furry ECS is a TypeScript Entity-component-system library
 - npm
 
   ```bash
+  npm install furry-ecs
+  ```
+
+  or
+
+  ```bash
   npm install https://github.com/jhondesignee/furry-ecs
   ```
 
 - yarn
+
+  ```bash
+  yarn add furry-ecs
+  ```
+
+  or
 
   ```bash
   yarn add https://github.com/jhondesignee/furry-ecs
@@ -33,6 +50,9 @@ const component1 = ECS.defineComponent({
 const component2 = ECS.defineComponent({
   baz: ECS.ComponentType.ARRAY
 })
+
+component1.props.foo[entity1.EID] = 0
+component2.props.baz[entity2.EID]![0] = 0
 
 const system1 = ECS.defineSystem(world => {
   const query = ECS.defineQuery({
