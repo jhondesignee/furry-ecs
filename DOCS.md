@@ -246,7 +246,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **_public readonly_ pros: { [K _in keyof_ Schema]: Schema[K] _extends_ ComponentType.NUMBER ? Array\<number\> : Array\<Array\<number\>\> }**
+  - **_public readonly_ pros: { [K _in keyof_ Schema]: Schema[K] _extends_ ComponentType.NUMBER ? Record\<number, number\> : Record\<number, Array\<number\>\> }**
 
     Stores all the entity properties as an array of specified type
 
