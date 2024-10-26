@@ -74,15 +74,15 @@ const system2 = ECS.defineSystem((world, args) => {
   }
 })
 
+const args = [0]
 ECS.addEntity(world, [entity1, entity2])
 ECS.addComponent(world, [entity1, entity2], [component1, component2])
-ECS.addSystem(world, [system1, system2])
+ECS.addSystem(world, [system1, system2], ...args)
 
 // loop
 const delta = 0
 const time = performance.now()
-const args = [0]
-ECS.update(world, delta, time, ...args)
+ECS.update(world, delta, time)
 ```
 
 ## Documentation
