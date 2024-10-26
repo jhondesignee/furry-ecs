@@ -12,6 +12,10 @@
     "coverage": "vitest --coverage --config vitest.config.ts",
     "tc": "tsc --noEmit"
   },
+  "repository": {
+    "url": "https://github.com/jhondesignee/furry-ecs",
+    "type": "git"
+  },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.0",
