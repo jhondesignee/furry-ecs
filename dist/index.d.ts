@@ -66,7 +66,8 @@ declare module "furry-ecs" {
   }
 
   export class Component<Schema extends Record<string, ComponentType> = {}> {
-    public readonly props: { [K in keyof Schema]: Schema[K] extends ComponentType.NUMBER ? Array<number> : Array<Array<number>> }
+    public readonly props: {     [K in keyof Schema]: Schema[K] extends ComponentType.NUMBER ? Record<number, number> : Record<number, Array<number>>}
+
 
     constructor(schema: Schema)
     private static createProperties<Schema extends Record<string, ComponentType>>(schema: Schema)

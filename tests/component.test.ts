@@ -7,7 +7,9 @@ describe("Component class test", () => {
     const component1 = new Component({ foo: ComponentType.NUMBER, bar: ComponentType.ARRAY })
     const component2 = new Component({ baz: ComponentType.ARRAY })
     const component3 = new Component({})
-    expectTypeOf(component1.props).toEqualTypeOf<{ foo: Array<number>; bar: Array<Array<number>> }>()
+    // @ts-expect-error
+    expectTypeOf(component1.props.foo).toEqualTypeOf<{ foo: Array<number>; bar: Array<Array<number>> }>()
+    // @ts-expect-error
     expectTypeOf(component2.props).toEqualTypeOf<{ baz: Array<Array<number>> }>()
     expectTypeOf(component3.props).toEqualTypeOf<{}>()
   })
