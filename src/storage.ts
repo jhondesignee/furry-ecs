@@ -1,37 +1,58 @@
 import { Status } from "#constants"
 
 export default class Storage<Data> {
-  public readonly data: Map<Data, Status>
-  private readonly deferredData: Map<Data, Status>
+  public hasChanged: boolean
+  private readonly data: Map<Data, Status>
+  private readonly deferredData: {
+    added: Set<Data>
+    removed: Set<Data>
+  }
 
   constructor() {
     this.data = new Map()
-    this.deferredData = new Map()
+    this.deferredData = {
+      added: new Set(),
+      removed: new Set()
+    }
+    this.hasChanged = false
   }
 
   public addData(data: Data, immediately: boolean = false): void {
+    if (this.deferredData.removed.has(data)) {
+      this.deferredData.removed.delete(data)
+      return
+    }
+    if (this.data.has(data) || this.deferredData.added.has(data)) return
     if (immediately) {
       this.data.set(data, Status.ACTIVE)
     } else {
-      this.deferredData.set(data, Status.ADDED)
+      this.deferredData.added.add(data)
     }
   }
 
   public removeData(data: Data, immediately: boolean = false): void {
-    if (this.deferredData.has(data)) {
-      this.deferredData.delete(data)
+    if (this.deferredData.added.has(data)) {
+      this.deferredData.added.delete(data)
       return
     }
+    if (!this.data.has(data) || this.deferredData.removed.has(data)) return
     if (immediately) {
       this.data.delete(data)
     } else {
-      if (this.data.has(data)) {
-        this.deferredData.set(data, Status.REMOVED)
-      }
+      this.deferredData.removed.add(data)
     }
   }
 
+  public hasData(data: Data): boolean {
+    return this.data.has(data)
+  }
+
+  public hasDeferredData(data: Data): boolean {
+    return this.deferredData.added.has(data) || this.deferredData.removed.has(data)
+  }
+
   public commitChanges(immediately: boolean = false): void {
+    if (this.hasChanged) this.hasChanged = false
     if (immediately) this.applyDeferredChanges()
     this.cleanPreviousChanges()
     if (!immediately) this.applyDeferredChanges()
@@ -39,14 +60,41 @@ export default class Storage<Data> {
 
   public destroy(): void {
     this.data.clear()
-    this.deferredData.clear()
+    this.cleanDeferredChanges()
+  }
+
+  public getDataStatus(data: Data): Status | undefined {
+    return this.data.get(data)
+  }
+
+  public keys(): MapIterator<Data> {
+    return this.data.keys()
+  }
+
+  public values(): MapIterator<Status> {
+    return this.data.values()
+  }
+
+  public length(): number {
+    return this.data.size
+  }
+
+  *[Symbol.iterator](): Iterator<[Data, Status]> {
+    for (const entry of this.data) {
+      yield entry
+    }
   }
 
   private applyDeferredChanges(): void {
-    for (const [data, status] of this.deferredData) {
-      this.data.set(data, status)
+    for (const data of this.deferredData.added) {
+      this.data.set(data, Status.ADDED)
+      this.hasChanged = true
     }
-    this.deferredData.clear()
+    for (const data of this.deferredData.removed) {
+      this.data.set(data, Status.REMOVED)
+      this.hasChanged = true
+    }
+    this.cleanDeferredChanges()
   }
 
   private cleanPreviousChanges(): void {
@@ -57,5 +105,10 @@ export default class Storage<Data> {
         this.data.delete(data)
       }
     }
+  }
+
+  private cleanDeferredChanges(): void {
+    this.deferredData.added.clear()
+    this.deferredData.removed.clear()
   }
 }
