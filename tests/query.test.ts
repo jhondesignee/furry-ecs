@@ -3,7 +3,7 @@ import Query from "#query"
 import Entity from "#entity"
 import Component from "#component"
 import World from "#world"
-import { QueryModifier } from "#constants"
+import { Status } from "#constants"
 
 describe("Query class test", () => {
   let world: World
@@ -54,18 +54,18 @@ describe("Query class test", () => {
   })
   test("Should filter the recently added entities", () => {
     world.addComponent(entity5, component1)
-    expect(query.exec(world, QueryModifier.ADDED).length).toBe(1)
+    expect(query.exec(world, Status.ADDED).length).toBe(1)
     world.update(0, 0)
-    expect(query.exec(world, QueryModifier.ADDED).length).toBe(1)
+    expect(query.exec(world, Status.ADDED).length).toBe(1)
     world.update(0, 0)
-    expect(query.exec(world, QueryModifier.ADDED).length).toBe(0)
+    expect(query.exec(world, Status.ADDED).length).toBe(0)
   })
   test("Should filter the recently removed entities", () => {
     world.removeComponent(entity1, component1)
-    expect(query.exec(world, QueryModifier.REMOVED).length).toBe(0)
+    expect(query.exec(world, Status.REMOVED).length).toBe(0)
     world.update(0, 0)
-    expect(query.exec(world, QueryModifier.REMOVED).length).toBe(1)
+    expect(query.exec(world, Status.REMOVED).length).toBe(1)
     world.update(0, 0)
-    expect(query.exec(world, QueryModifier.REMOVED).length).toBe(0)
+    expect(query.exec(world, Status.REMOVED).length).toBe(0)
   })
 })

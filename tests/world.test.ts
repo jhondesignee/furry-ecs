@@ -3,7 +3,7 @@ import World from "#world"
 import Entity from "#entity"
 import Component from "#component"
 import System from "#system"
-import { QueryModifier } from "#constants"
+import { Status } from "#constants"
 
 describe("World class test", () => {
   describe("Entity addition test", () => {
@@ -19,26 +19,26 @@ describe("World class test", () => {
 
     test("Added entity should be deferred", () => {
       world.addEntity(entity1)
-      expect(world.entities.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
       world.update(0, 0)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
     })
-    test("Added entities should have the ADDED query modifier for one frame", () => {
-      expect(world.entities.get(entity1)).toBe(QueryModifier.ADDED)
+    test("Added entities should have the ADDED status for one frame", () => {
+      expect(world.entities.getDataStatus(entity1)).toBe(Status.ADDED)
       world.update(0, 0)
-      expect(world.entities.get(entity1)).toBe(QueryModifier.ACTIVE)
+      expect(world.entities.getDataStatus(entity1)).toBe(Status.ACTIVE)
     })
     test("Entities should be unique", () => {
       world.addEntity(entity1)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
     })
     test("Should not exist conflict between current and new entities", () => {
       world.addEntity(entity2)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.entities.size).toBe(2)
+      expect(world.entities.length()).toBe(2)
     })
   })
   describe("Component addition test", () => {
@@ -52,41 +52,41 @@ describe("World class test", () => {
       world = new World()
       entity1 = new Entity()
       entity2 = new Entity()
-      component1 = new Component({})
-      component2 = new Component({})
+      component1 = new Component()
+      component2 = new Component()
     })
 
     test("Added components should be deferred only if the entity exists in the world", () => {
       world.addComponent(entity1, component1)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(0)
       world.update(0, 0)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(0)
       world.addEntity(entity1)
       world.addComponent(entity1, component1)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(0)
       world.update(0, 0)
-      expect(world.components.size).toBe(1)
-      expect(world.components.get(component1)?.size).toBe(1)
+      expect(world.components.length()).toBe(1)
+      expect(component1.entities.length()).toBe(1)
     })
-    test("Entities in the components should have the ADDED query modifier for one frame after addition", () => {
-      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.ADDED)
+    test("Entities in the components should have the ADDED status for one frame after addition", () => {
+      expect(component1.entities.getDataStatus(entity1)).toBe(Status.ADDED)
       world.update(0, 0)
-      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.ACTIVE)
+      expect(component1.entities.getDataStatus(entity1)).toBe(Status.ACTIVE)
     })
     test("Added component data should be created if they do not exist", () => {
       world.addComponent(entity1, component2)
-      expect(world.components.size).toBe(1)
+      expect(world.components.length()).toBe(1)
       world.update(0, 0)
-      expect(world.components.size).toBe(2)
+      expect(world.components.length()).toBe(2)
     })
     test("Should not exist conflict between current and new component entities", () => {
       world.addEntity(entity2)
       world.addComponent(entity2, component1)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(1)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(2)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(2)
     })
   })
   describe("System addition test", () => {
@@ -96,27 +96,27 @@ describe("World class test", () => {
 
     beforeAll(() => {
       world = new World()
-      system1 = new System(() => {})
-      system2 = new System(() => {})
+      system1 = new System()
+      system2 = new System()
     })
 
     test("Added system should be deferred", () => {
       world.addSystem(system1)
-      expect(world.systems.size).toBe(0)
+      expect(world.systems.length()).toBe(0)
       world.update(0, 0)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
     })
     test("Systems should be unique", () => {
       world.addSystem(system1)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
       world.update(0, 0)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
     })
     test("Should not exist conflict between current and new systems", () => {
       world.addSystem(system2)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
       world.update(0, 0)
-      expect(world.systems.size).toBe(2)
+      expect(world.systems.length()).toBe(2)
     })
   })
   describe("Entity removal test", () => {
@@ -135,25 +135,25 @@ describe("World class test", () => {
 
     test("Removed entities should be deferred", () => {
       world.removeEntity(entity1)
-      expect(world.entities.size).toBe(2)
+      expect(world.entities.length()).toBe(2)
       world.update(0, 0)
-      expect(world.entities.size).toBe(2)
+      expect(world.entities.length()).toBe(2)
     })
-    test("Removed entities should have the REMOVED query modifier for one frame", () => {
-      expect(world.entities.get(entity1)).toBe(QueryModifier.REMOVED)
+    test("Removed entities should have the REMOVED status for one frame", () => {
+      expect(world.entities.getDataStatus(entity1)).toBe(Status.REMOVED)
       world.update(0, 0)
-      expect(world.entities.get(entity1)).toBeUndefined()
+      expect(world.entities.getDataStatus(entity1)).toBeUndefined()
     })
     test("Skip if the entity does not exist in the world", () => {
       world.removeEntity(entity1)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
       world.removeEntity(entity2)
-      expect(world.entities.size).toBe(1)
+      expect(world.entities.length()).toBe(1)
       world.update(0, 0)
       world.update(0, 0)
-      expect(world.entities.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
     })
   })
 
@@ -169,9 +169,9 @@ describe("World class test", () => {
       world = new World()
       entity1 = new Entity()
       entity2 = new Entity()
-      component1 = new Component({})
-      component2 = new Component({})
-      component3 = new Component({})
+      component1 = new Component()
+      component2 = new Component()
+      component3 = new Component()
       world.addEntity(entity1)
       world.addEntity(entity2)
       world.addComponent(entity1, component1)
@@ -182,47 +182,47 @@ describe("World class test", () => {
 
     test("Removed entities from component should be deferred", () => {
       world.removeComponent(entity1, component1)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(2)
-      expect(world.components.get(component2)?.size).toBe(1)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(2)
+      expect(component2.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(2)
-      expect(world.components.get(component2)?.size).toBe(1)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(2)
+      expect(component2.entities.length()).toBe(1)
     })
-    test("Entities in the components should have the REMOVED query modifier for one frame", () => {
-      expect(world.components.get(component1)?.get(entity1)).toBe(QueryModifier.REMOVED)
+    test("Entities in the components should have the REMOVED status for one frame", () => {
+      expect(component1.entities.getDataStatus(entity1)).toBe(Status.REMOVED)
       world.update(0, 0)
-      expect(world.components.get(component1)?.get(entity1)).toBeUndefined()
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(1)
-      expect(world.components.get(component2)?.size).toBe(1)
+      expect(component1.entities.getDataStatus(entity1)).toBeUndefined()
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(1)
+      expect(component2.entities.length()).toBe(1)
     })
     test("Skip if entity does not exist in the world", () => {
       world.removeComponent(entity2, component2)
       world.update(0, 0)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(1)
-      expect(world.components.get(component2)?.size).toBe(1)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(1)
+      expect(component2.entities.length()).toBe(1)
       world.removeComponent(entity1, component3)
       world.update(0, 0)
-      expect(world.components.size).toBe(2)
-      expect(world.components.get(component1)?.size).toBe(1)
-      expect(world.components.get(component2)?.size).toBe(1)
+      expect(world.components.length()).toBe(2)
+      expect(component1.entities.length()).toBe(1)
+      expect(component2.entities.length()).toBe(1)
     })
     test("Empty components should be removed", () => {
       world.removeComponent(entity1, component2)
       world.update(0, 0)
       world.update(0, 0)
-      expect(world.components.size).toBe(1)
-      expect(world.components.get(component1)?.size).toBe(1)
-      expect(world.components.get(component2)?.size).toBeUndefined()
+      expect(world.components.length()).toBe(1)
+      expect(component1.entities.length()).toBe(1)
+      expect(component2.entities.length()).toBe(0)
       world.removeComponent(entity2, component1)
       world.update(0, 0)
       world.update(0, 0)
-      expect(world.components.size).toBe(0)
-      expect(world.components.get(component1)?.size).toBeUndefined()
-      expect(world.components.get(component2)?.size).toBeUndefined()
+      expect(world.components.length()).toBe(0)
+      expect(component1.entities.length()).toBe(0)
+      expect(component2.entities.length()).toBe(0)
     })
   })
   describe("System removal test", () => {
@@ -232,8 +232,8 @@ describe("World class test", () => {
 
     beforeAll(() => {
       world = new World()
-      system1 = new System(() => {})
-      system2 = new System(() => {})
+      system1 = new System()
+      system2 = new System()
       world.addSystem(system1)
       world.addSystem(system2)
       world.update(0, 0)
@@ -241,19 +241,25 @@ describe("World class test", () => {
 
     test("Removed systems should be deferred", () => {
       world.removeSystem(system1)
-      expect(world.systems.size).toBe(2)
+      expect(world.systems.length()).toBe(2)
       world.update(0, 0)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(2)
+    })
+    test("Removed systems should have the REMOVED status for one frame", () => {
+      expect(world.systems.getDataStatus(system1)).toBe(Status.REMOVED)
+      world.update(0, 0)
+      expect(world.systems.getDataStatus(system1)).toBeUndefined()
     })
     test("Skip if the system does not exist in the world", () => {
       world.removeSystem(system1)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
       world.update(0, 0)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
       world.removeSystem(system2)
-      expect(world.systems.size).toBe(1)
+      expect(world.systems.length()).toBe(1)
       world.update(0, 0)
-      expect(world.systems.size).toBe(0)
+      world.update(0, 0)
+      expect(world.systems.length()).toBe(0)
     })
   })
   describe("World data destruction test", () => {
@@ -271,8 +277,8 @@ describe("World class test", () => {
       entity2 = new Entity()
       component1 = new Component({})
       component2 = new Component({})
-      system1 = new System(() => {})
-      system2 = new System(() => {})
+      system1 = new System()
+      system2 = new System()
       world.addEntity(entity1)
       world.addComponent(entity1, component1)
       world.addSystem(system1)
@@ -284,15 +290,15 @@ describe("World class test", () => {
     })
 
     test("Current data should be destroyed", () => {
-      expect(world.entities.size).toBe(0)
-      expect(world.components.size).toBe(0)
-      expect(world.systems.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
+      expect(world.components.length()).toBe(0)
+      expect(world.systems.length()).toBe(0)
     })
     test("Deferred changes should be destroyed", () => {
       world.update(0, 0)
-      expect(world.entities.size).toBe(0)
-      expect(world.components.size).toBe(0)
-      expect(world.systems.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
+      expect(world.components.length()).toBe(0)
+      expect(world.systems.length()).toBe(0)
     })
   })
   describe("System execution test", () => {
@@ -300,76 +306,55 @@ describe("World class test", () => {
     let system1: System
     let system2: System
     let system3: System
-    let firstRun: Array<boolean>
-    let receivesWorldInstance: Array<boolean>
-    let receivesArgs: Array<boolean>
-    let receivesTimers: Array<boolean>
+    let startRun: boolean
+    let destroyRun: boolean
     let updateOrder: Array<number>
 
     beforeAll(() => {
       world = new World()
-      firstRun = new Array()
-      receivesWorldInstance = new Array()
-      receivesArgs = new Array()
-      receivesTimers = new Array()
+      system1 = new System({
+        start() {
+          startRun = true
+        },
+        update() {
+          updateOrder.push(0)
+        }
+      })
+      system2 = new System({
+        update() {
+          updateOrder.push(1)
+        }
+      })
+      system3 = new System({
+        update() {
+          updateOrder.push(2)
+        },
+        destroy() {
+          destroyRun = true
+        }
+      })
+      startRun = false
+      destroyRun = false
       updateOrder = new Array()
-      system1 = new System((world, args) => {
-        const ID = 0
-        firstRun[ID] = true
-        if (args?.[0] === "test") receivesArgs[ID] = true
-        if (world instanceof World) receivesWorldInstance[ID] = true
-        return (delta, time) => {
-          if (delta === 1 && time === 2) receivesTimers[ID] = true
-          updateOrder.push(ID)
-        }
-      })
-      system2 = new System((world, args) => {
-        const ID = 1
-        firstRun[ID] = true
-        if (args?.[0] === "test") receivesArgs[ID] = true
-        if (world instanceof World) receivesWorldInstance[ID] = true
-        return (delta, time) => {
-          if (delta === 1 && time === 2) receivesTimers[ID] = true
-          updateOrder.push(ID)
-        }
-      })
-      system3 = new System((world, args) => {
-        const ID = 2
-        firstRun[ID] = true
-        if (args?.[0] === "test") receivesArgs[ID] = true
-        if (world instanceof World) receivesWorldInstance[ID] = true
-        return (delta, time) => {
-          if (delta === 1 && time === 2) receivesTimers[ID] = true
-          updateOrder.push(ID)
-        }
-      })
-      world.addSystem(system1, ["test"])
-      world.addSystem(system2, ["test"])
-      world.addSystem(system3, ["test"])
-      world.update(1, 2)
+      world.addSystem(system1)
+      world.addSystem(system2)
+      world.addSystem(system3)
+      world.update(0, 0)
     })
 
-    test("Should run once after added to the world", () => {
-      expect(firstRun.every(Boolean)).toBeTruthy()
+    test("Start function should run once after being added to the world", () => {
+      expect(startRun).toBeTruthy()
     })
-    test("Should receive the world instance", () => {
-      expect(receivesWorldInstance.every(Boolean)).toBeTruthy()
-    })
-    test("Should receive the optional arguments", () => {
-      expect(receivesArgs.every(Boolean)).toBeTruthy()
-    })
-    test("Should receive the correct timers", () => {
-      expect(receivesTimers.every(Boolean)).toBeTruthy()
-    })
-    test("Should be called in addition order", () => {
-      let isSorted = true
+    test("Update functions should be run in addition order", () => {
+      let sorted = true
       for (let index = 0; index < updateOrder.length - 1; index++) {
-        if (updateOrder[index]! > updateOrder[index + 1]!) {
-          isSorted = false
-          break
-        }
+        if (updateOrder[index]! >= updateOrder[index + 1]!) sorted = false
       }
-      expect(isSorted).toBeTruthy()
+      expect(sorted).toBeTruthy()
+    })
+    test("Destroy function should run once after being removed from the world", () => {
+      world.removeSystem(system3)
+      expect(destroyRun).toBeTruthy()
     })
   })
   describe("Same frame changes test", () => {
@@ -388,15 +373,15 @@ describe("World class test", () => {
       entity3 = new Entity()
       component1 = new Component({})
       component2 = new Component({})
-      system = new System(() => {})
+      system = new System()
     })
 
     test("Entity changes should be done immediately", () => {
       world.addEntity(entity1)
       world.removeEntity(entity1)
-      expect(world.entities.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
       world.update(0, 0)
-      expect(world.entities.size).toBe(0)
+      expect(world.entities.length()).toBe(0)
     })
     test("Component changes should be done immediately", () => {
       world.addEntity(entity1)
@@ -404,35 +389,35 @@ describe("World class test", () => {
       world.addEntity(entity3)
       world.addComponent(entity1, component1)
       world.removeComponent(entity1, component1)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(0)
       world.update(0, 0)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(0)
       world.addComponent(entity1, component1)
       world.update(0, 0)
-      expect(world.components.size).toBe(1)
-      expect(world.components.get(component1)?.size).toBe(1)
+      expect(world.components.length()).toBe(1)
+      expect(component1.entities.length()).toBe(1)
       world.addComponent(entity2, component1)
       world.removeComponent(entity2, component1)
-      expect(world.components.get(component1)?.size).toBe(1)
+      expect(component1.entities.length()).toBe(1)
       world.update(0, 0)
-      expect(world.components.get(component1)?.size).toBe(1)
+      expect(component1.entities.length()).toBe(1)
     })
     test("System changes should be done immediately", () => {
       world.addSystem(system)
       world.removeSystem(system)
-      expect(world.systems.size).toBe(0)
+      expect(world.systems.length()).toBe(0)
       world.update(0, 0)
-      expect(world.systems.size).toBe(0)
+      expect(world.systems.length()).toBe(0)
     })
     test("Removed entities should also be removed from its components", () => {
       world.addComponent(entity1, component2)
       world.removeEntity(entity1)
       world.removeEntity(entity3)
-      expect(world.components.size).toBe(1)
+      expect(world.components.length()).toBe(1)
       world.update(0, 0)
-      expect(world.components.size).toBe(1)
+      expect(world.components.length()).toBe(2)
       world.update(0, 0)
-      expect(world.components.size).toBe(0)
+      expect(world.components.length()).toBe(1)
     })
   })
 })

@@ -1,24 +1,31 @@
-import { ComponentType } from "#constants"
+import Storage from "#storage"
+import { DEFAULT_ARRAY_SIZE, DEFAULT_WORLD_SIZE, ComponentType } from "#constants"
+import type Entity from "#entity"
+import type { ComponentSchema, ComponentProps } from "#types"
 
-export default class Component<Schema extends Record<string, ComponentType> = {}> {
-  public readonly props: { [K in keyof Schema]: Schema[K] extends ComponentType.NUMBER ? Record<number, number> : Record<number, Array<number>> }
+export default class Component<Schema extends ComponentSchema<ComponentType> = {}> {
+  public readonly props: ComponentProps<Schema>
+  public readonly entities: Storage<Entity>
 
-  constructor(schema: Schema) {
-    this.props = Component.createProperties(schema)
+  constructor(schema?: Schema) {
+    this.props = Component.createProperties(schema || ({} as Schema))
+    this.entities = new Storage()
   }
 
-  private static createProperties<Schema extends Record<string, ComponentType>>(schema: Schema) {
+  private static createProperties<Schema extends ComponentSchema<ComponentType>>(schema: Schema): ComponentProps<Schema> {
     return Object.fromEntries(
-      Object.entries(schema).map(([key, type]) => {
+      Object.entries(schema).map(([key, { type, length }]) => {
         switch (type) {
           case ComponentType.NUMBER:
-            return [key, {} as Record<number, number>]
+            // DEFAULT_WORLD_SIZE will be replaced by the world size soon
+            return [key, new Array(DEFAULT_WORLD_SIZE).fill(0)]
           case ComponentType.ARRAY:
-            return [key, {} as Record<number, Array<number>>]
+            length ??= DEFAULT_ARRAY_SIZE
+            return [key, Array.from({ length: DEFAULT_WORLD_SIZE }, () => new Array(length).fill(0))]
+          default:
+            return [key, null]
         }
       })
-    ) as {
-      [K in keyof Schema]: Schema[K] extends ComponentType.NUMBER ? Record<number, number> : Record<number, Array<number>>
-    }
+    ) as ComponentProps<Schema>
   }
 }

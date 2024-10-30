@@ -1,9 +1,13 @@
-import type { SystemFunction } from "#types"
+import type { SystemConfig, SystemStartFunction, SystemUpdateFunction, SystemDestroyFunction } from "#types"
 
 export default class System {
-  public readonly onStart: SystemFunction
+  public readonly start: SystemStartFunction | undefined
+  public readonly update: SystemUpdateFunction | undefined
+  public readonly destroy: SystemDestroyFunction | undefined
 
-  constructor(systemFunction: SystemFunction) {
-    this.onStart = systemFunction
+  constructor(config?: SystemConfig) {
+    this.start = config?.start
+    this.update = config?.update
+    this.destroy = config?.destroy
   }
 }

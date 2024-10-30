@@ -4,6 +4,15 @@ export { default as Entity } from "#entity"
 export { default as Component } from "#component"
 export { default as System } from "#system"
 export { default as Query } from "#query"
+export { default as Storage } from "#storage"
 export { default as World } from "#world"
 
-export type { SystemUpdateFunction, SystemFunction, QueryConfig } from "#types"
+export type {
+  SystemStartFunction,
+  SystemUpdateFunction,
+  SystemDestroyFunction,
+  ComponentSchema,
+  ComponentProps,
+  SystemConfig,
+  QueryConfig
+} from "#types"
