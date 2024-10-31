@@ -3,12 +3,12 @@ import Component from "#component"
 import System from "#system"
 import Query from "#query"
 import World from "#world"
-import { ComponentType, QueryModifier } from "#constants"
-import type { SystemFunction, QueryConfig } from "#types"
+import { ComponentType, Status } from "#constants"
+import type { ComponentSchema, SystemConfig, QueryConfig } from "#types"
 
 export default class ECS {
   public static readonly ComponentType = ComponentType
-  public static readonly QueryModifier = QueryModifier
+  public static readonly Status = Status
 
   public static createWorld(): World {
     return new World()
@@ -18,16 +18,16 @@ export default class ECS {
     return new Entity()
   }
 
-  public static defineComponent<Schema extends Record<string, ComponentType>>(schema: Schema): Component<Schema> {
+  public static defineComponent<Schema extends ComponentSchema<ComponentType>>(schema?: Schema): Component<Schema> {
     return new Component(schema)
   }
 
-  public static defineSystem(systemFunction: SystemFunction): System {
-    return new System(systemFunction)
+  public static defineSystem(systemConfig?: SystemConfig): System {
+    return new System(systemConfig)
   }
 
-  public static defineQuery(config: QueryConfig): Query {
-    return new Query(config)
+  public static defineQuery(queryConfig?: QueryConfig): Query {
+    return new Query(queryConfig)
   }
 
   public static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void {
@@ -53,16 +53,15 @@ export default class ECS {
     }
   }
 
-  public static addSystem(worlds: World | Array<World>, systems: System | Array<System>, ...args: Array<unknown>): void {
+  public static addSystem(worlds: World | Array<World>, systems: System | Array<System>): void {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
     const systemArray: Array<System> = Array.isArray(systems) ? systems : [systems]
     for (const world of worldArray) {
       for (const system of systemArray) {
-        world.addSystem(system, args)
+        world.addSystem(system)
       }
     }
   }
-
 
   public static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
@@ -96,11 +95,11 @@ export default class ECS {
       }
     }
   }
-  
-  public static update(worlds: World | Array<World>, delta: number, time: number): void {
+
+  public static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
     for (const world of worldArray) {
-      world.update(delta, time)
+      world.update(delta, time, args)
     }
   }
 

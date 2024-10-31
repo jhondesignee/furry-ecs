@@ -1,30 +1,91 @@
+<!--
+- ## **`MEMBER: INITIALIZER`** <a name="LINK"></a>
+
+  DESCRIPTION
+
+  ### generics
+
+  - **MEMBER: TYPE**
+
+    DESCRIPTION
+
+  ### properties
+
+  - **MEMBER: TYPE**
+
+    DESCRIPTION
+
+  ### arguments
+
+  - **MEMBER: TYPE**
+
+    DESCRIPTION
+
+  ### methods
+
+  - **MEMBER: TYPE**
+
+    DESCRIPTION
+
+  ### returns
+
+  - **TYPE**
+
+    DESCRIPTION
+-->
+
 # Furry ECS documentation
 
 here are the type definition and description for all the members of Furry ECS library
 
 ## Table of contents
 
+- [SystemStartFunction](#system-start-function)
 - [SystemUpdateFunction](#system-update-function)
-- [SystemFunction](#system-function)
+- [SystemDestroyFunction](#system-destroy-function)
+- [ComponentSchema](#component-schema)
+- [DeprecatedComponentSchema](#deprecated-component-schema)
+- [ComponentProps](#component-props)
+- [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
-- [DeferredChanges](#deferred-changes)
+- [DEFAULT_WORLD_SIZE](#default-world-size)
+- [DEFAULT_ARRAY_SIZE](#default-array-size)
 - [ComponentType](#component-type)
-- [QueryModifier](#query-modifier)
+- [Status](#status)
 - [Constants](#constants)
 - [ECS](#ecs)
 - [Entity](#entity)
 - [Component](#component)
 - [System](#system)
 - [Query](#query)
+- [Storage](#storage)
 - [World](#world)
 
 ---
+
+- ## **`SystemStartFunction: type`** <a name="system-start-function"></a>
+
+  Represents the function that will run once it's added to the world
+
+  ### arguments
+
+  - **world: World**
+
+    The world instance
+
+  ### returns
+
+  - **void**
 
 - ## **`SystemUpdateFunction: type`** <a name="system-update-function"></a>
 
   Represents the function that will run at the system update
 
   ### arguments
+
+  - **world: World**
+
+    The world instance
 
   - **delta: number**
 
@@ -34,27 +95,85 @@ here are the type definition and description for all the members of Furry ECS li
 
     The current time
 
-  ### return
+  - **args?: Array\<unknown\>**
+
+    List of some optional args from the world update method
+
+  ### returns
 
   - **void**
 
-- ## **`SystemFunction: type`** <a name="system-function"></a>
+- ## **`SystemDestroyFunction: type`** <a name="system-destroy-function"></a>
 
-  Represents the system function that will run once it's added to the world
+  Represents the function that will run once it's removed from the world
 
   ### arguments
 
   - **world: World**
 
-    The world this system was added
+    The world instance
 
-  - **args: Array\<unknown\>**
+  ### returns
 
-    Some optional parameters passed to the world update method
+  - **void**
 
-  ### return
+- ## **`ComponentSchema: type`** <a name="component-schema"></a>
 
-  - **SystemUpdateFunction | void**
+  Represents a schema of properties
+
+  ### generics
+
+  - **T**
+
+    Enum of possible types
+
+  ### properties
+
+  - **[key: string]: { type: T; length?: T _extends_ ComponentType.NUMBER ? undefined : number }**
+
+    The component properties
+
+- ## **`DeprecatedComponentSchema: type`** <a name="deprecated-component-schema"></a>
+
+  Represents the old type definition for component schema
+
+  ### returns
+
+  - **Record\<string, ComponentType\>**
+
+- ## **`ComponentProps: type`** <a name="component-props"></a>
+
+  Represents each property mapped to an array
+
+  ### generics
+
+  - **Schema _extends_ ComponentSchema\<ComponentType\>**
+
+    The properties schema
+
+  ### properties
+
+  - **[K _in keyof_ Schema]: Schema[K]["type"] _extends_ ComponentType.NUMBER ? Array<number> : Schema[K]["type"] _extends_ ComponentType.ARRAY ? Array<Array<number>> : null**
+
+    the component properties
+
+- ## **`SystemConfig: interface`** <a name="system-config"></a>
+
+  Represents the system configuration object structure
+
+  ### properties
+
+  - **start?: SystemStartFunction**
+
+    The function that will run once it's added to the world
+
+  - **update: SystemUpdateFunction**
+
+    The function that will run at the system update
+
+  - **destroy?: SystemDestroyFunction**
+
+    The function that will run once it's removed from the world
 
 - ## **`QueryConfig: interface`** <a name="query-config"></a>
 
@@ -70,25 +189,21 @@ here are the type definition and description for all the members of Furry ECS li
 
     Defines all the components to be excluded from the entity query result
 
-- ## **`DeferredChanges: interface`** <a name="deferred-changes"></a>
+- ## **`DEFAULT_WORLD_SIZE: const`** <a name="default-world-size"></a>
 
-  Represents the deferred changes object structure of the world
+  Default length value of entities in the world
 
-  ### generics
+  ### returns
 
-  - **EntitySet**
-  - **ComponentMap**
-  - **SystemMap**
+  - **1000**
 
-  ### properties
+- ## **`DEFAULT_ARRAY_SIZE: const`** <a name="default-array-size"></a>
 
-  - **added: { entities: EntitySet; components: ComponentMap; systems: SystemMap }**
+  Default length of property arrays
 
-    Stores all the recently added entities, components and systems to the world
+  ### returns
 
-  - **removed: { entities: EntitySet; components: ComponentMap; systems: SystemMap }**
-
-    Stores all the recently removed entities, components and systems from the world
+  - **100**
 
 - ## **`ComponentType: enum`** <a name="component-type"></a>
 
@@ -104,23 +219,23 @@ here are the type definition and description for all the members of Furry ECS li
 
     Represents a component property of type array of number
 
-- ## **`QueryModifier: enum`** <a name="query-modifier"></a>
+- ## **`Status: enum`** <a name="status"></a>
 
-  Enum of additional filters for queries
+  Status of items in the world
 
   ### properties
 
   - **ADDED: 0**
 
-    Represents a recently added entity
+    Represents a recently added item
 
   - **ACTIVE: 1**
 
-    Represents an active entity
+    Represents an active item
 
   - **REMOVED: 2**
 
-    Represents a recently removed entity
+    Represents a recently removed item
 
 - ## **`Constants: const`** <a name="constants"></a>
 
@@ -128,13 +243,21 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
+  - **DEFAULT*WORLD_SIZE: \_typeof* DEFAULT_WORLD_SIZE**
+
+    Default length value of entities in the world
+
+  - **DEFAULT*ARRAY_SIZE: \_typeof* DEFAULT_ARRAY_SIZE**
+
+    Default length of property arrays
+
   - **ComponentType: _typeof_ ComponentType**
 
     Enum of all possible types of component properties
 
-  - **QueryModifier: _typeof_ QueryModifier**
+  - **Status: _typeof_ Status**
 
-    Enum of additional filters for queries
+    Status of items in the world
 
 - ## **`ECS: class`** <a name="ecs"></a>
 
@@ -146,9 +269,9 @@ here are the type definition and description for all the members of Furry ECS li
 
     Enum of all possible types of component properties
 
-  - **_public static readonly_ QueryModifier: _typeof_ QueryModifier**
+  - **_public static readonly_ Status: _typeof_ Status**
 
-    Enum of additional filters for queries
+    Status of items in the world
 
   ### methods
 
@@ -180,13 +303,9 @@ here are the type definition and description for all the members of Furry ECS li
 
     Adds components to entities in the world
 
-  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>, ...args: Array\<unknown\>): void**
+  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): void**
 
     Adds systems to the world
-
-  - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number): void**
-
-    Updates the world
 
   - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): void**
 
@@ -199,6 +318,10 @@ here are the type definition and description for all the members of Furry ECS li
   - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): void**
 
     Removes systems from the world
+
+  - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number, ...args: Array\<unknown\>): void**
+
+    Updates the world
 
   - **_public static_ destroyWorld(worlds: World | Array\<World\>): void**
 
@@ -242,25 +365,29 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### generics
 
-  - **Schema _extends_ Record\<string, ComponentType\> = {}**
+  - **Schema _extends_ ComponentSchema\<ComponentType\> = {}**
 
   ### properties
 
-  - **_public readonly_ pros: { [K _in keyof_ Schema]: Schema[K] _extends_ ComponentType.NUMBER ? Record\<number, number\> : Record\<number, Array\<number\>\> }**
+  - **_public readonly_ props: ComponentProps<Schema>**
 
     Stores all the entity properties as an array of specified type
 
   ### arguments
 
-  - **schema: Schema**
+  - **schema?: Schema | DeprecatedComponentSchema**
 
     The properties structure. An empty object can be used for the component act like a tag
 
   ### methods
 
-  - **_private static_ createProperties<Schema _extends_ Record\<string, ComponentType\>\>(schema: Schema)**
+  - **_private_ createProperties\<Schema _extends_ ComponentSchema\<ComponentType\>\>(schema: Schema): ComponentProps\<Schema\>**
 
     Creates the properties structure
+
+  - **_private_ resolveDeprecatedSchema(deprecatedSchema: DeprecatedComponentSchema): Schema**
+
+    Resolves the old schema structure into the new schema
 
 - ## **`System: class`** <a name="system"></a>
 
@@ -268,15 +395,23 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **public readonly onStart: SystemFunction**
+  - **public readonly start?: SystemStartFunction**
 
-    Stores the function that will run once it's added to the world
+    The function that will run once it's added to the world
+
+  - **public readonly update?: SystemUpdateFunction**
+
+    The function that will run at the system update
+
+  - **public readonly destroy?: SystemDestroyFunction**
+
+    The function that will run once it's removed from the world
 
   ### arguments
 
-  - **systemFunction: SystemFunction**
+  - **config: SystemConfig**
 
-    The function that will run once it's added to the world
+    the system configuration that takes the functions
 
 - ## **`Query: class`** <a name="query"></a>
 
@@ -292,9 +427,13 @@ here are the type definition and description for all the members of Furry ECS li
 
     Stores all the components that will exclude entities
 
-  - **_private entities_: Map\<Entity, QueryModifier\>**
+  - **_private entities_: Map\<Entity, Status\>**
 
     Stores the filtered entities and its corresponding status
+
+  - **_private_ updated: boolean**
+
+    Flag that indicates if the entities map is up-to-dated
 
   ### arguments
 
@@ -304,17 +443,107 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### methods
 
-  - **_public_ exec(world: World, modifier?: QueryModifier): Array\<Entity\>**
+  - **_public_ exec(world: World, status?: Status): Array\<Entity\>**
 
-    Filters the entities that satisfies the included and excluded components. A modifier can be used for further filtering
+    Filters the entities that satisfies the included and excluded components. The status can be used for further filtering
 
-  - **_private_ filterEntitiesByComponent(world: World): Map\<Entity, QueryModifier\>**
+  - **_private_ hasChanged(): boolean**
+
+    Checks if some of the components has changes
+
+  - **_private_ cleanChanges(): boolean**
+
+    Cleans the previous changes by changing the status of the components
+
+  - **_private_ filterEntitiesByComponent(world: World): Map\<Entity, Status\>**
 
     Filters the entities based on the included and excluded components
 
-  - **_private_ filterEntitiesByModifier(modifier: QueryModifier): Array\<Entity\>**
+  - **_private_ filterEntitiesByModifier(status: Status): Array\<Entity\>**
 
-    Filters the already filtered entities based on the modifier
+    Filters the already filtered entities based on their status
+
+- ## **`Storage: class`** <a name="storage"></a>
+
+  Storage system for any iterable data
+
+  ### generics
+
+  - **Data**
+
+    The data type that will be stored
+
+  ### properties
+
+  - **_public_ hasChanged: boolean**
+
+    Determines if there have been any changes
+
+  - **_private readonly_ data: Map\<Data, Status\>**
+
+    Stores the data and their current status
+
+  - **_private readonly_ deferredData: { added: Set\<Data\>; removed: Set\<Data\> }**
+
+    Stores the deferred data in added and removed structures
+
+  ### methods
+
+  - **_public_ addData(data: Data, immediately?: boolean): void**
+
+    Adds the data
+
+  - **_public_ removeData(data: Data, immediately?: boolean): void**
+
+    Removes the data
+
+  - **_public_ hasData(data: Data): boolean**
+
+    Checks if data exists
+
+  - **_public_ hasDeferredData(data: Data): boolean**
+
+    Checks if data is deferred
+
+  - **_public_ commitChanges(immediately?: boolean): void**
+
+    Applies any changes
+
+  - **_public_ destroy(): void**
+
+    Erases all the data
+
+  - **_public_ getDataStatus(data: Data): Status | undefined**
+
+    Get the status of the data
+
+  - **_public_ keys(): MapIterator\<Data\>**
+
+    Gets an array of all the data
+
+  - **_public_ values(): MapIterator\<Status\>**
+
+    Gets an array of all the status
+
+  - **_public_ length(): number**
+
+    Gets the count of data stored
+
+  - **\*\[Symbol.iterator\](): Iterator\<\[Data, Status\]\>**
+
+    Instance can be used as an iterator
+
+  - **_private_ applyDeferredChanges(): void**
+
+    Applies all the deferred changes
+
+  - **_private_ cleanPreviousChanges(): void**
+
+    Clean the data status and remove pendent data
+
+  - **_private_ cleanDeferredChanges(): void**
+
+    Erases all the deferred data
 
 - ## **`World: class`** <a name="world"></a>
 
@@ -322,27 +551,23 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **_public readonly_ entities: Map\<Entity, QueryModifier\>**
+  - **_public readonly_ entities: Storage\<Entity\>**
 
-    Stores entities added to the world
+    Stores entities in the world
 
-  - **_public readonly_ components: Map\<Component, Map\<Entity, QueryModifier\>\>**
+  - **_public readonly_ components: Storage\<Component\>**
 
-    Stores components and its associated entities
+    Stores components in the world
 
-  - **_public readonly_ systems: Map\<System, SystemUpdateFunction | void\>**
+  - **_public readonly_ systems: Storage\<System\>**
 
-    Stores systems and its update function
-
-  - **_public_ hasChanged: boolean**
-
-    Indicates if there has been any change in the world
-
-  - **_private readonly_ deferredChanges: DeferredChanges\<World["entities"], World["components"], World["systems"]\>**
-
-    Stores any change before it be implemented
+    Stores systems in the world
 
   ### methods
+
+  - **_get_ hasChanged(): boolean**
+
+    DEPRECATED! Check if has changes in the entities map
 
   - **_public_ addEntity(entity: Entity): void**
 
@@ -356,10 +581,6 @@ here are the type definition and description for all the members of Furry ECS li
 
     Adds a system to the world
 
-  - **_public_ update(delta: number, time: number): void**
-
-    Updates the world
-
   - **_public_ removeEntity(entity: Entity): void**
 
     Removes an entity from the world
@@ -372,14 +593,14 @@ here are the type definition and description for all the members of Furry ECS li
 
     Removes a system from the world
 
+  - **_public_ update(delta: number, time: number, args?: Array\<unknown\>): void**
+
+    Updates the world
+
   - **_public_ destroy(): void**
 
     Erases all the data from the world
 
-  - **_private_ applyDeferredChanges(): void**
+  - **_private_ applyChanges(): void**
 
-    Checks for any deferred changes and implement them
-
-  - **private clearDeferredChanges(): void**
-
-    Clears any previous previous changes
+    Applies any deferred changes to the woeld
