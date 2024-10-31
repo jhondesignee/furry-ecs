@@ -10,7 +10,8 @@
     "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "test": "vitest --config vitest.config.ts",
     "coverage": "vitest --coverage --config vitest.config.ts",
-    "tc": "tsc --noEmit"
+    "tc": "tsc --noEmit",
+    "prepare": "yarn tc && yarn coverage --watch false && yarn build"
   },
   "repository": {
     "url": "https://github.com/jhondesignee/furry-ecs",
