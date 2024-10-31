@@ -8,6 +8,7 @@ declare module "furry-ecs" {
       length?: T extends ComponentType.NUMBER ? undefined : number
     }
   }
+  export type DeprecatedComponentSchema = Record<string, ComponentType>
   export type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
     [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER
       ? Array<number>
@@ -21,13 +22,14 @@ declare module "furry-ecs" {
     update: SystemUpdateFunction
     destroy?: SystemDestroyFunction
   }
+
   export interface QueryConfig {
     include: Array<Component>
     exclude?: Array<Component>
   }
 
   const DEFAULT_WORLD_SIZE = 1000
-  const DEFAULT_ARRAY_SIZE = 1000
+  const DEFAULT_ARRAY_SIZE = 100
 
   enum ComponentType {
     NUMBER = 0,
@@ -53,7 +55,7 @@ declare module "furry-ecs" {
 
     static createWorld(): World
     static createEntity(): Entity
-    static defineComponent<Schema extends ComponentSchema<ComponentType>>(schema?: Schema): Component<Schema>
+    static defineComponent<Schema extends ComponentSchema<ComponentType>>(schema?: Schema | DeprecatedComponentSchema): Component<Schema>
     static defineSystem(systemConfig?: SystemConfig): System
     static defineQuery(queryConfig?: QueryConfig): Query
     static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): void
@@ -81,8 +83,9 @@ declare module "furry-ecs" {
     readonly props: ComponentProps<Schema>
     readonly entities: Storage<Entity>
 
-    constructor(schema?: Schema)
-    private static createProperties
+    constructor(schema?: Schema | DeprecatedComponentSchema)
+    private createProperties
+    private resolveDeprecatedSchema
   }
 
   export class System {
