@@ -44,45 +44,54 @@ const entity1 = ECS.createEntity()
 const entity2 = ECS.createEntity()
 
 const component1 = ECS.defineComponent({
-  foo: ECS.ComponentType.NUMBER,
-  bar: ECS.ComponentType.NUMBER
+  foo: {
+    type: ECS.ComponentType.NUMBER
+  },
+  bar: {
+    type: ECS.ComponentType.NUMBER
+  }
 })
 const component2 = ECS.defineComponent({
-  baz: ECS.ComponentType.ARRAY
+  baz: {
+    type: ECS.ComponentType.ARRAY,
+    length: 2
+  }
 })
 
 component1.props.foo[entity1.EID] = 0
-component2.props.baz[entity2.EID]![0] = 0
+component2.props.baz[entity2.EID] = [0, 1]
 
-const system1 = ECS.defineSystem(world => {
-  const query = ECS.defineQuery({
-    include: [component1],
-    exclude: [component2]
-  })
+const query = ECS.defineQuery({
+  include: [component1],
+  exclude: [component2]
+})
 
-  return (delta, time) => {
+const system1 = ECS.defineSystem({
+  update(world, delta, time) {
     const entities = query.exec(world)
-    const addedEntities = query.exec(world, ECS.QueryModifier.ADDED)
-    const removedEntities = query.exec(world, ECS.QueryModifier.REMOVED)
+    const addedEntities = query.exec(world, ECS.Status.ADDED)
+    const removedEntities = query.exec(world, ECS.Status.REMOVED)
   }
 })
-const system2 = ECS.defineSystem((world, args) => {
-  let data: unknown = args[0]
+const system2 = ECS.defineSystem({
+  update(world, delta, time, args) {
+    let data: unknown = args?.[0]
 
-  if (typeof data === "number") {
-    data++
+    if (typeof data === "number") {
+      data++
+    }
   }
 })
 
-const args = [0]
 ECS.addEntity(world, [entity1, entity2])
 ECS.addComponent(world, [entity1, entity2], [component1, component2])
-ECS.addSystem(world, [system1, system2], ...args)
+ECS.addSystem(world, [system1, system2])
 
 // loop
+const args = [0]
 const delta = 0
 const time = performance.now()
-ECS.update(world, delta, time)
+ECS.update(world, delta, time, ...args)
 ```
 
 ## Documentation
