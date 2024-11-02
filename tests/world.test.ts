@@ -45,6 +45,7 @@ describe("World class test", () => {
     let world: World
     let entity1: Entity
     let entity2: Entity
+    let entity3: Entity
     let component1: Component
     let component2: Component
 
@@ -52,7 +53,8 @@ describe("World class test", () => {
       world = new World()
       entity1 = new Entity()
       entity2 = new Entity()
-      component1 = new Component()
+      entity3 = new Entity()
+      component1 = new Component({}, 2)
       component2 = new Component()
     })
 
@@ -87,6 +89,9 @@ describe("World class test", () => {
       world.update(0, 0)
       expect(world.components.length()).toBe(2)
       expect(component1.entities.length()).toBe(2)
+    })
+    test("Add entity out of range should return false", () => {
+      expect(component1.attachEntity(entity3)).toBeFalsy()
     })
   })
   describe("System addition test", () => {
@@ -418,6 +423,38 @@ describe("World class test", () => {
       expect(world.components.length()).toBe(2)
       world.update(0, 0)
       expect(world.components.length()).toBe(1)
+    })
+  })
+  describe("Out of range addition test", () => {
+    let world: World
+    let entity1: Entity
+    let entity2: Entity
+    let component1: Component
+    let component2: Component
+    let system1: System
+    let system2: System
+
+    beforeAll(() => {
+      world = new World({ size: 1 })
+      entity1 = new Entity()
+      entity2 = new Entity()
+      component1 = new Component()
+      component2 = new Component()
+      system1 = new System()
+      system2 = new System()
+    })
+
+    test("Add entity should return false", () => {
+      expect(world.addEntity(entity1)).toBeTruthy()
+      expect(world.addEntity(entity2)).toBeFalsy()
+    })
+    test("Add component should return false", () => {
+      expect(world.addComponent(entity1, component1)).toBeTruthy()
+      expect(world.addComponent(entity1, component2)).toBeFalsy()
+    })
+    test("Add system should return false", () => {
+      expect(world.addSystem(system1)).toBeTruthy()
+      expect(world.addSystem(system2)).toBeFalsy()
     })
   })
 })

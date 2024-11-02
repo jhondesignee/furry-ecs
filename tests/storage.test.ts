@@ -11,7 +11,7 @@ describe("Storage class test", () => {
     })
 
     test("Added data should be marked as ADDED for one frame", () => {
-      storage.addData(0)
+      expect(storage.addData(0)).toBeTruthy()
       expect(storage.length()).toBe(0)
       expect(storage.hasData(0)).toBeFalsy()
       expect(storage.hasDeferredData(0)).toBeTruthy()
@@ -31,13 +31,13 @@ describe("Storage class test", () => {
       expect(storage.length()).toBe(2)
     })
     test("Should be possible to immediately do the change", () => {
-      storage.addData(2, true)
+      expect(storage.addData(2, true)).toBeTruthy()
       expect(storage.length()).toBe(3)
       storage.commitChanges()
       expect(storage.length()).toBe(3)
     })
     test("Inore if data already exists", () => {
-      storage.addData(2, true)
+      expect(storage.addData(2, true)).toBeFalsy()
       expect(storage.length()).toBe(3)
       storage.commitChanges()
       expect(storage.length()).toBe(3)
@@ -55,7 +55,7 @@ describe("Storage class test", () => {
     })
 
     test("Removed data should be marked as REMOVED for one frame", () => {
-      storage.removeData(0)
+      expect(storage.removeData(0)).toBeTruthy()
       expect(storage.length()).toBe(3)
       expect(storage.hasData(0)).toBeTruthy()
       expect(storage.hasDeferredData(0)).toBeTruthy()
@@ -71,27 +71,27 @@ describe("Storage class test", () => {
       expect(storage.getDataStatus(0)).toBeUndefined()
     })
     test("Removal should be deferred only if the data already exist", () => {
-      storage.removeData(1)
+      expect(storage.removeData(1)).toBeTruthy()
       expect(storage.length()).toBe(2)
       storage.commitChanges()
       storage.commitChanges()
       expect(storage.length()).toBe(1)
-      storage.removeData(3)
+      expect(storage.removeData(3)).toBeFalsy()
       expect(storage.length()).toBe(1)
       storage.commitChanges()
       storage.commitChanges()
       expect(storage.length()).toBe(1)
     })
     test("Previous deferred data should be deleted immediately", () => {
-      storage.addData(3)
-      storage.removeData(3)
+      expect(storage.addData(3)).toBeTruthy()
+      expect(storage.removeData(3)).toBeTruthy()
       expect(storage.length()).toBe(1)
       storage.commitChanges()
       storage.commitChanges()
       expect(storage.length()).toBe(1)
     })
     test("Should be possible to immediately do the change", () => {
-      storage.removeData(2, true)
+      expect(storage.removeData(2, true)).toBeTruthy()
       expect(storage.length()).toBe(0)
       storage.commitChanges()
       storage.commitChanges()

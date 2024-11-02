@@ -1,18 +1,21 @@
 import Storage from "#storage"
-import { Status } from "#constants"
+import { DEFAULT_WORLD_SIZE, Status } from "#constants"
 import type Entity from "#entity"
 import type Component from "#component"
 import type System from "#system"
+import type { WorldConfig } from "#types"
 
 export default class World {
   public readonly entities: Storage<Entity>
   public readonly components: Storage<Component>
   public readonly systems: Storage<System>
+  public readonly size: number
 
-  constructor() {
+  constructor(config?: WorldConfig) {
     this.entities = new Storage()
     this.components = new Storage()
     this.systems = new Storage()
+    this.size = config?.size || DEFAULT_WORLD_SIZE
   }
 
   /* istanbul ignore next */
@@ -21,45 +24,57 @@ export default class World {
     return false
   }
 
-  public addEntity(entity: Entity): void {
-    this.entities.addData(entity)
-  }
-
-  public addComponent(entity: Entity, component: Component): void {
-    if (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) {
-      component.entities.addData(entity)
-      this.components.addData(component)
+  public addEntity(entity: Entity): boolean {
+    if (this.entities.length(true) >= this.size) {
+      return false
     }
+    return this.entities.addData(entity)
   }
 
-  public addSystem(system: System): void {
+  public addComponent(entity: Entity, component: Component): boolean {
+    if (this.components.length(true) >= this.size) {
+      return false
+    }
+    if (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) {
+      this.components.addData(component)
+      return component.attachEntity(entity)
+    }
+    return false
+  }
+
+  public addSystem(system: System): boolean {
+    if (this.systems.length(true) >= this.size) {
+      return false
+    }
     system.start?.(this)
-    this.systems.addData(system)
+    return this.systems.addData(system)
   }
 
-  public removeEntity(entity: Entity): void {
+  public removeEntity(entity: Entity): boolean {
     for (const component of this.components.keys()) {
       if (component.entities.hasData(entity) || component.entities.hasDeferredData(entity)) {
         this.removeComponent(entity, component)
       }
     }
     if (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) {
-      this.entities.removeData(entity)
+      return this.entities.removeData(entity)
     }
+    return false
   }
 
-  public removeComponent(entity: Entity, component: Component): void {
+  public removeComponent(entity: Entity, component: Component): boolean {
     if (
       (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) &&
       (this.components.hasData(component) || this.components.hasDeferredData(component))
     ) {
-      component.entities.removeData(entity)
+      return component.detachEntity(entity)
     }
+    return false
   }
 
-  public removeSystem(system: System): void {
+  public removeSystem(system: System): boolean {
     system.destroy?.(this)
-    this.systems.removeData(system)
+    return this.systems.removeData(system)
   }
 
   public update(delta: number, time: number, args?: Array<unknown>): void {
@@ -82,8 +97,6 @@ export default class World {
       component.entities.commitChanges()
       if (component.entities.length() === 0) {
         this.components.removeData(component, true)
-      } else {
-        this.components.addData(component, true)
       }
     }
     this.systems.commitChanges()

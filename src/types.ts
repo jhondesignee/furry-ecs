@@ -30,3 +30,7 @@ export interface QueryConfig {
   include: Array<Component>
   exclude?: Array<Component>
 }
+
+export interface WorldConfig {
+  size?: number
+}

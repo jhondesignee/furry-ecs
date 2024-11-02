@@ -17,30 +17,32 @@ export default class Storage<Data> {
     this.hasChanged = false
   }
 
-  public addData(data: Data, immediately: boolean = false): void {
+  public addData(data: Data, immediately: boolean = false): boolean {
     if (this.deferredData.removed.has(data)) {
       this.deferredData.removed.delete(data)
-      return
+      return true
     }
-    if (this.data.has(data) || this.deferredData.added.has(data)) return
+    if (this.data.has(data) || this.deferredData.added.has(data)) return false
     if (immediately) {
       this.data.set(data, Status.ACTIVE)
     } else {
       this.deferredData.added.add(data)
     }
+    return true
   }
 
-  public removeData(data: Data, immediately: boolean = false): void {
+  public removeData(data: Data, immediately: boolean = false): boolean {
     if (this.deferredData.added.has(data)) {
       this.deferredData.added.delete(data)
-      return
+      return true
     }
-    if (!this.data.has(data) || this.deferredData.removed.has(data)) return
+    if (!this.data.has(data) || this.deferredData.removed.has(data)) return false
     if (immediately) {
       this.data.delete(data)
     } else {
       this.deferredData.removed.add(data)
     }
+    return true
   }
 
   public hasData(data: Data): boolean {
@@ -75,8 +77,9 @@ export default class Storage<Data> {
     return this.data.values()
   }
 
-  public length(): number {
-    return this.data.size
+  public length(includeDeferred?: boolean): number {
+    const size = this.data.size + (includeDeferred ? this.deferredData.added.size : 0)
+    return size
   }
 
   *[Symbol.iterator](): Iterator<[Data, Status]> {
