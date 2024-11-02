@@ -48,6 +48,7 @@ here are the type definition and description for all the members of Furry ECS li
 - [ComponentProps](#component-props)
 - [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
+- [WorldConfig](#world-config)
 - [DEFAULT_WORLD_SIZE](#default-world-size)
 - [DEFAULT_ARRAY_SIZE](#default-array-size)
 - [ComponentType](#component-type)
@@ -189,6 +190,16 @@ here are the type definition and description for all the members of Furry ECS li
 
     Defines all the components to be excluded from the entity query result
 
+- ## **`WorldConfig: interface`** <a name="world-config"></a>
+
+  Represents the world configuration structure
+
+  ### properties
+
+  - **size?: number**
+
+    The limit of items inside the world
+
 - ## **`DEFAULT_WORLD_SIZE: const`** <a name="default-world-size"></a>
 
   Default length value of entities in the world
@@ -283,7 +294,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Creates a entity instance
 
-  - **_public static_ defineComponent<Schema _extends_ Record\<string, ComponentType\>\>(schema: Schema): Component\<Schema\>**
+  - **_public static_ defineComponent<Schema _extends_ Record\<string, ComponentType\>\>(schema?: Schema, size?: number): Component\<Schema\>**
 
     Creates a component instance
 
@@ -295,27 +306,27 @@ here are the type definition and description for all the members of Furry ECS li
 
     Creates a query instance
 
-  - **_public static_ addEntity(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>): void**
+  - **_public static_ addEntity(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>): boolean**
 
     Adds entities to the world
 
-  - **_public static_ addComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): void**
+  - **_public static_ addComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): boolean**
 
     Adds components to entities in the world
 
-  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): void**
+  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): boolean**
 
     Adds systems to the world
 
-  - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): void**
+  - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): boolean**
 
     Removes entities from the world
 
-  - **_public static_ removeComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): void**
+  - **_public static_ removeComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): boolean**
 
     Removes components from entities in the world
 
-  - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): void**
+  - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): boolean**
 
     Removes systems from the world
 
@@ -373,13 +384,29 @@ here are the type definition and description for all the members of Furry ECS li
 
     Stores all the entity properties as an array of specified type
 
+  - **_public readonly_ size: number**
+
+    The limit of entities inside the component
+
   ### arguments
 
   - **schema?: Schema | DeprecatedComponentSchema**
 
     The properties structure. An empty object can be used for the component act like a tag
 
+  - **size?: number**
+
+    The limit of entities inside the component. Uses the default world size if not provided
+
   ### methods
+
+  - **_public_ attachEntity(entity: Entity): boolean**
+
+    Adds an entity to the component
+
+  - **_public_ detachEntity(entity: Entity): boolean**
+
+    Removes an entity from the component
 
   - **_private_ createProperties\<Schema _extends_ ComponentSchema\<ComponentType\>\>(schema: Schema): ComponentProps\<Schema\>**
 
@@ -489,11 +516,11 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### methods
 
-  - **_public_ addData(data: Data, immediately?: boolean): void**
+  - **_public_ addData(data: Data, immediately?: boolean): boolean**
 
     Adds the data
 
-  - **_public_ removeData(data: Data, immediately?: boolean): void**
+  - **_public_ removeData(data: Data, immediately?: boolean): boolean**
 
     Removes the data
 
@@ -525,9 +552,9 @@ here are the type definition and description for all the members of Furry ECS li
 
     Gets an array of all the status
 
-  - **_public_ length(): number**
+  - **_public_ length(includeDeferred?: boolean): number**
 
-    Gets the count of data stored
+    Gets the count of data stored. Can sum the size of deferred additions as well
 
   - **\*\[Symbol.iterator\](): Iterator\<\[Data, Status\]\>**
 
@@ -563,33 +590,37 @@ here are the type definition and description for all the members of Furry ECS li
 
     Stores systems in the world
 
+  - **_public readonly_ size: boolean**
+
+    The limit of items inside the world
+
   ### methods
 
   - **_get_ hasChanged(): boolean**
 
     DEPRECATED! Check if has changes in the entities map
 
-  - **_public_ addEntity(entity: Entity): void**
+  - **_public_ addEntity(entity: Entity): boolean**
 
     Adds an entity to the world
 
-  - **_public_ addComponent(component: Component): void**
+  - **_public_ addComponent(component: Component): boolean**
 
     Adds a component to the world
 
-  - **_public_ addSystem(system: System): void**
+  - **_public_ addSystem(system: System): boolean**
 
     Adds a system to the world
 
-  - **_public_ removeEntity(entity: Entity): void**
+  - **_public_ removeEntity(entity: Entity): boolean**
 
     Removes an entity from the world
 
-  - **_public_ removeComponent(component: Component): void**
+  - **_public_ removeComponent(component: Component): boolean**
 
     Removes a component from the world
 
-  - **_public_ removeSystem(system: System): void**
+  - **_public_ removeSystem(system: System): boolean**
 
     Removes a system from the world
 

@@ -2,28 +2,29 @@ import { defineConfig } from "rollup"
 import typescript from "@rollup/plugin-typescript"
 import terser from "@rollup/plugin-terser"
 import { dts } from "rollup-plugin-dts"
+import { cleandir } from "rollup-plugin-cleandir"
 import os from "node:os"
+
+const typescriptPlugin = typescript()
+const terserPlugin = terser({
+  maxWorkers: os.cpus().length || 1
+})
 
 export default defineConfig([
   {
     input: "index.ts",
     output: {
-      dir: "dist",
-      format: "es"
+      file: "dist/index.js",
+      format: "esm"
     },
-    plugins: [
-      typescript(),
-      terser({
-        maxWorkers: os.cpus().length || 1
-      })
-    ]
+    plugins: [cleandir("dist"), typescriptPlugin, terserPlugin]
   },
   {
-    input: "index.d.ts",
+    input: "index.ts",
     output: {
       file: "dist/index.d.ts",
-      format: "es"
+      format: "esm"
     },
-    plugins: [dts()]
+    plugins: [typescriptPlugin, dts()]
   }
 ])
