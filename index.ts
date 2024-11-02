@@ -15,5 +15,6 @@ export type {
   ComponentSchema,
   ComponentProps,
   SystemConfig,
-  QueryConfig
+  QueryConfig,
+  WorldConfig
 } from "#types"

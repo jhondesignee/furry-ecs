@@ -144,4 +144,4 @@ declare class ECS {
     static destroyWorld(worlds: World | Array<World>): void;
 }
 
-export { Component, type ComponentProps, type ComponentSchema, constants as Constants, ECS, Entity, Query, type QueryConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, World, ECS as default };
+export { Component, type ComponentProps, type ComponentSchema, constants as Constants, ECS, Entity, Query, type QueryConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, World, type WorldConfig, ECS as default };
