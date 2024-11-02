@@ -5,7 +5,6 @@
     "paths": {
       "#*": ["src/*"]
     },
-    "typeRoots": ["index.d.ts"],
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",

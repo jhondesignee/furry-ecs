@@ -1,4 +1,5 @@
 export { default } from "#ecs"
+export { default as ECS } from "#ecs"
 export * as Constants from "#constants"
 export { default as Entity } from "#entity"
 export { default as Component } from "#component"
