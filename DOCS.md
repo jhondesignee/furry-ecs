@@ -49,6 +49,7 @@ here are the type definition and description for all the members of Furry ECS li
 - [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
 - [WorldConfig](#world-config)
+- [StorageSerializedData](#storage-serialized-data)
 - [DEFAULT_WORLD_SIZE](#default-world-size)
 - [DEFAULT_ARRAY_SIZE](#default-array-size)
 - [ComponentType](#component-type)
@@ -199,6 +200,30 @@ here are the type definition and description for all the members of Furry ECS li
   - **size?: number**
 
     The limit of items inside the world
+
+- ## **`StorageSerializedData: interface`** <a name="storage-serialized-data"></a>
+
+  Represents the storage serialized data structure
+
+  ### generics
+
+  - **Data**
+
+    The type of the stored data
+
+  ### properties
+
+  - **data: Map\<Data, Status\>**
+
+    The data map from the storage
+
+  - **deferredData: { added: Set\<Data\>; removed: Set\<Data\> }**
+
+    The deferred data from the storage
+
+  - **hasChanged: boolean**
+
+    The flag indicating changes from the storage
 
 - ## **`DEFAULT_WORLD_SIZE: const`** <a name="default-world-size"></a>
 
@@ -556,6 +581,14 @@ here are the type definition and description for all the members of Furry ECS li
 
     Gets the count of data stored. Can sum the size of deferred additions as well
 
+  - **_public_ serialize(): StorageSerializedData\<Data\>**
+
+    Gets the current state of the storage into an object
+
+  - **_public_ deserialize(storageData: StorageSerializedData\<Data\>): boolean**
+
+    Reconstruct the state of the storage, erasing the current state. Returns false if the data is invalid
+
   - **\*\[Symbol.iterator\](): Iterator\<\[Data, Status\]\>**
 
     Instance can be used as an iterator
@@ -593,6 +626,12 @@ here are the type definition and description for all the members of Furry ECS li
   - **_public readonly_ size: boolean**
 
     The limit of items inside the world
+
+  ### arguments
+
+  - **config?: WorldConfig**
+
+    Represents the world configuration structure
 
   ### methods
 

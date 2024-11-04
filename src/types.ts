@@ -1,6 +1,6 @@
 import type Component from "#component"
 import type World from "#world"
-import type { ComponentType } from "#constants"
+import type { Status, ComponentType } from "#constants"
 
 export type SystemStartFunction = (world: World) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
@@ -33,4 +33,13 @@ export interface QueryConfig {
 
 export interface WorldConfig {
   size?: number
+}
+
+export interface StorageSerializedData<Data> {
+  data: Map<Data, Status>
+  deferredData: {
+    added: Set<Data>
+    removed: Set<Data>
+  }
+  hasChanged: boolean
 }

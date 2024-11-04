@@ -30,27 +30,6 @@ declare namespace constants {
   export { constants_ComponentType as ComponentType, constants_DEFAULT_ARRAY_SIZE as DEFAULT_ARRAY_SIZE, constants_DEFAULT_WORLD_SIZE as DEFAULT_WORLD_SIZE, constants_Status as Status };
 }
 
-declare class Storage<Data> {
-    hasChanged: boolean;
-    private readonly data;
-    private readonly deferredData;
-    constructor();
-    addData(data: Data, immediately?: boolean): boolean;
-    removeData(data: Data, immediately?: boolean): boolean;
-    hasData(data: Data): boolean;
-    hasDeferredData(data: Data): boolean;
-    commitChanges(immediately?: boolean): void;
-    destroy(): void;
-    getDataStatus(data: Data): Status | undefined;
-    keys(): MapIterator<Data>;
-    values(): MapIterator<Status>;
-    length(includeDeferred?: boolean): number;
-    [Symbol.iterator](): Iterator<[Data, Status]>;
-    private applyDeferredChanges;
-    private cleanPreviousChanges;
-    private cleanDeferredChanges;
-}
-
 declare class System {
     readonly start: SystemStartFunction | undefined;
     readonly update: SystemUpdateFunction | undefined;
@@ -101,6 +80,37 @@ interface QueryConfig {
 interface WorldConfig {
     size?: number;
 }
+interface StorageSerializedData<Data> {
+    data: Map<Data, Status>;
+    deferredData: {
+        added: Set<Data>;
+        removed: Set<Data>;
+    };
+    hasChanged: boolean;
+}
+
+declare class Storage<Data> {
+    hasChanged: boolean;
+    private readonly data;
+    private readonly deferredData;
+    constructor();
+    addData(data: Data, immediately?: boolean): boolean;
+    removeData(data: Data, immediately?: boolean): boolean;
+    hasData(data: Data): boolean;
+    hasDeferredData(data: Data): boolean;
+    commitChanges(immediately?: boolean): void;
+    destroy(): void;
+    getDataStatus(data: Data): Status | undefined;
+    keys(): MapIterator<Data>;
+    values(): MapIterator<Status>;
+    length(includeDeferred?: boolean): number;
+    serialize(): StorageSerializedData<Data>;
+    deserialize(storageData: StorageSerializedData<Data>): boolean;
+    [Symbol.iterator](): Iterator<[Data, Status]>;
+    private applyDeferredChanges;
+    private cleanPreviousChanges;
+    private cleanDeferredChanges;
+}
 
 declare class Component<Schema extends ComponentSchema<ComponentType> = {}> {
     readonly props: ComponentProps<Schema>;
@@ -144,4 +154,4 @@ declare class ECS {
     static destroyWorld(worlds: World | Array<World>): void;
 }
 
-export { Component, type ComponentProps, type ComponentSchema, constants as Constants, ECS, Entity, Query, type QueryConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, World, type WorldConfig, ECS as default };
+export { Component, type ComponentProps, type ComponentSchema, constants as Constants, ECS, Entity, Query, type QueryConfig, Storage, type StorageSerializedData, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, World, type WorldConfig, ECS as default };

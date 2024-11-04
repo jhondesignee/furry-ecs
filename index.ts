@@ -16,5 +16,6 @@ export type {
   ComponentProps,
   SystemConfig,
   QueryConfig,
-  WorldConfig
+  WorldConfig,
+  StorageSerializedData
 } from "#types"
