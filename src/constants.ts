@@ -11,3 +11,13 @@ export enum Status {
   ACTIVE,
   REMOVED
 }
+
+export enum Serializable {
+  NUMBER,
+  STRING,
+  BOOLEAN,
+  ARRAY,
+  MAP,
+  SET,
+  OBJECT
+}

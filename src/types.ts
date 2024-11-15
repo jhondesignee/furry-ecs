@@ -1,6 +1,7 @@
 import type Component from "#component"
 import type World from "#world"
-import type { Status, ComponentType } from "#constants"
+import type Serializer from "#serializer"
+import type { ComponentType, Serializable } from "#constants"
 
 export type SystemStartFunction = (world: World) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
@@ -35,11 +36,34 @@ export interface WorldConfig {
   size?: number
 }
 
-export interface StorageSerializedData<Data> {
-  data: Map<Data, Status>
-  deferredData: {
-    added: Set<Data>
-    removed: Set<Data>
-  }
-  hasChanged: boolean
+export type Constructor<T> = new (...args: any) => T
+export type CustomSerializeHandler<T, R> = (obj: T, self: Serializer<T, R>) => SerializedData<R> | undefined
+export type CustomDeserializeHandler<T, R> = (obj: SerializedData<R>, self: Serializer<T, R>) => T | R | undefined
+export type SerializableKey = string | number | boolean
+export type SerializedArray<T> = Array<SerializedData<T>>
+export type SerializedMap<K, V> = Array<[SerializedData<K & SerializableKey>, SerializedData<V>]>
+export type SerializedSet<T> = Array<SerializedData<T>>
+export type SerializedObject<T> = Array<[keyof T & string, SerializedData<T[keyof T]>]>
+export type SerializedPrimitive = number | string | boolean
+export type SerializedValueType<T> = T extends Array<infer U>
+  ? SerializedArray<U>
+  : T extends Map<infer K, infer V>
+  ? SerializedMap<K, V>
+  : T extends Set<infer U>
+  ? SerializedSet<U>
+  : T extends object
+  ? SerializedObject<T>
+  : T extends SerializedPrimitive
+  ? T
+  : never
+export type SerializedData<T> = {
+  type: Serializable
+  name: string
+  value: SerializedValueType<T>
+}
+
+export interface SerializerConfig<T, R> {
+  serializeHandler?: CustomSerializeHandler<T, R>
+  deserializeHandler?: CustomDeserializeHandler<T, R>
+  classes?: Constructor<unknown> | Array<Constructor<unknown>>
 }

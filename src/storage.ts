@@ -1,5 +1,4 @@
 import { Status } from "#constants"
-import type { StorageSerializedData } from "#types"
 
 export default class Storage<Data> {
   public hasChanged: boolean
@@ -81,33 +80,6 @@ export default class Storage<Data> {
   public length(includeDeferred?: boolean): number {
     const size = this.data.size + (includeDeferred ? this.deferredData.added.size : 0)
     return size
-  }
-
-  public serialize(): StorageSerializedData<Data> {
-    return {
-      data: this.data,
-      deferredData: this.deferredData,
-      hasChanged: this.hasChanged
-    }
-  }
-
-  public deserialize(storageData: StorageSerializedData<Data>): boolean {
-    const { data, deferredData, hasChanged } = storageData
-    if (!(data instanceof Map)) return false
-    if (!(deferredData?.["added"] instanceof Set)) return false
-    if (!(deferredData?.["removed"] instanceof Set)) return false
-    if (typeof hasChanged !== "boolean") return false
-    for (const entry of data) {
-      this.data.set(entry[0], entry[1])
-    }
-    for (const value of deferredData.added) {
-      this.deferredData.added.add(value)
-    }
-    for (const value of deferredData.removed) {
-      this.deferredData.removed.add(value)
-    }
-    this.hasChanged = hasChanged
-    return true
   }
 
   *[Symbol.iterator](): Iterator<[Data, Status]> {

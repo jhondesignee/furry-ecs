@@ -6,6 +6,7 @@ export { default as Component } from "#component"
 export { default as System } from "#system"
 export { default as Query } from "#query"
 export { default as Storage } from "#storage"
+export { default as Serializer } from "#serializer"
 export { default as World } from "#world"
 
 export type {
@@ -17,5 +18,16 @@ export type {
   SystemConfig,
   QueryConfig,
   WorldConfig,
-  StorageSerializedData
+  Constructor,
+  CustomSerializeHandler,
+  CustomDeserializeHandler,
+  SerializableKey,
+  SerializedArray,
+  SerializedMap,
+  SerializedSet,
+  SerializedObject,
+  SerializedPrimitive,
+  SerializedValueType,
+  SerializedData,
+  SerializerConfig
 } from "#types"

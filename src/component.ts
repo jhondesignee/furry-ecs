@@ -38,7 +38,6 @@ export default class Component<Schema extends ComponentSchema<ComponentType> = {
       Object.entries(schema).map(([key, { type, length }]) => {
         switch (type) {
           case ComponentType.NUMBER:
-            // TODO: replace hardcoded size by the component size
             return [key, new Array(this.size).fill(0)]
           case ComponentType.ARRAY:
             length ??= DEFAULT_ARRAY_SIZE
