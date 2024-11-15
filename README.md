@@ -97,9 +97,3 @@ ECS.update(world, delta, time, ...args)
 ## Documentation
 
 Check out the [Documentation](DOCS.md) for more details of each member
-
-## Improvements
-
-- [x] Add error handling and world size limit
-- [ ] Add serialization system
-- [ ] Add a better type-safe solution for component properties
