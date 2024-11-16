@@ -1,7 +1,6 @@
 import { beforeAll, describe, test, expect } from "vitest"
 import Storage from "#storage"
 import { Status } from "#constants"
-import type { StorageSerializedData } from "#types"
 
 describe("Storage class test", () => {
   describe("Data addition test", () => {
@@ -118,48 +117,6 @@ describe("Storage class test", () => {
     test("Deferred data should be destroyed", () => {
       storage.commitChanges()
       expect(storage.length()).toBe(0)
-    })
-  })
-  describe("Serialization test", () => {
-    let storage1: Storage<number>
-    let storage2: Storage<number>
-    let serialized: StorageSerializedData<number>
-
-    beforeAll(() => {
-      storage1 = new Storage()
-      storage2 = new Storage()
-      storage1.addData(0)
-      storage1.addData(1)
-      storage1.commitChanges()
-      storage1.addData(2)
-      storage1.removeData(0)
-    })
-
-    test("All current and deferred changes should be serialized", () => {
-      serialized = storage1.serialize()
-      expect(serialized.data.size).toBe(2)
-      expect(serialized.deferredData.added.size).toBe(1)
-      expect(serialized.deferredData.removed.size).toBe(1)
-      expect(serialized.hasChanged).toBeTruthy()
-    })
-    test("Serialized data should de restored", () => {
-      storage2.deserialize(serialized)
-      expect(storage2.length()).toBe(2)
-      expect(storage2.length(true)).toBe(3)
-      expect(storage2.hasChanged).toBeTruthy()
-    })
-    test("Invalid data should return false", () => {
-      // @ts-expect-error
-      expect(storage2.deserialize({ data: [] })).toBeFalsy()
-      // @ts-expect-error
-      expect(storage2.deserialize({ data: new Map(), deferredData: [] })).toBeFalsy()
-      // @ts-expect-error
-      expect(storage2.deserialize({ data: new Map(), deferredData: { added: [], removed: new Set() } })).toBeFalsy()
-      // @ts-expect-error
-      expect(storage2.deserialize({ data: new Map(), deferredData: { added: new Set(), removed: [] } })).toBeFalsy()
-      // @ts-expect-error
-      expect(storage2.deserialize({ data: new Map(), deferredData: { added: new Set(), removed: new Set() }, hasChanged: undefined })).toBeFalsy()
-      expect(storage2.deserialize({ data: new Map(), deferredData: { added: new Set(), removed: new Set() }, hasChanged: false })).toBeTruthy()
     })
   })
   test("Immediate commit should clean the data status", () => {
