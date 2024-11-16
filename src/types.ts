@@ -65,5 +65,8 @@ export type SerializedData<T> = {
 export interface SerializerConfig<T, R> {
   serializeHandler?: CustomSerializeHandler<T, R>
   deserializeHandler?: CustomDeserializeHandler<T, R>
-  classes?: Constructor<unknown> | Array<Constructor<unknown>>
+}
+
+export interface SerializableClass<T> {
+  classes: Array<Constructor<T>>
 }

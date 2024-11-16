@@ -1,8 +1,10 @@
 import { beforeAll, describe, test, expect } from "vitest"
 import Serializer from "#serializer"
 import { Serializable } from "#constants"
+import type { SerializableClass } from "#types"
 
-class Foo {
+class Foo implements SerializableClass<Foo> {
+  public readonly classes = [Foo]
   public readonly value: number
 
   constructor(value: number) {
@@ -10,7 +12,8 @@ class Foo {
   }
 }
 
-class Bar {
+class Bar implements SerializableClass<Bar> {
+  public readonly classes = [Bar]
   private readonly value: number
 
   constructor(data: number) {
@@ -80,8 +83,7 @@ describe("Serializer class test", () => {
           }
         }
         return
-      },
-      classes: [Foo, Bar]
+      }
     })
   })
 
@@ -178,6 +180,8 @@ describe("Serializer class test", () => {
     const serialized = serializer.serialize(data)
     const deserialized = serializer.deserialize(serialized as NonNullable<typeof serialized>)
     delete data["d"]
+    // @ts-expect-error
+    delete data["i"]["classes"]
     expect(deserialized).toStrictEqual(data)
   })
   test("Unsupported values should be ignored", () => {
@@ -194,9 +198,7 @@ describe("Serializer class test", () => {
       g: new Serializer<number>(),
       h: new Foo(0)
     }
-    const serializer = new Serializer<typeof data>({
-      classes: Foo
-    })
+    const serializer = new Serializer<typeof data>()
     const serialized = serializer.serialize(data)
     expect(serialized).toStrictEqual({
       type: Serializable.OBJECT,
@@ -249,12 +251,15 @@ describe("Serializer class test", () => {
     // @ts-expect-error
     serialized["value"][3][1]["value"].push({ type: Serializable.NUMBER, value: undefined })
     const deserialized = serializer.deserialize(serialized as NonNullable<typeof serialized>)
-    expect(deserialized).toStrictEqual({
+    const result = {
       a: 0,
       b: [0],
       c: new Map([[0, 1]]),
       d: new Set([0]),
       h: new Foo(0)
-    })
+    }
+    // @ts-expect-error
+    delete result["h"]["classes"]
+    expect(deserialized).toStrictEqual(result)
   })
 })

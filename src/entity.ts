@@ -1,4 +1,7 @@
-export default class Entity {
+import type { SerializableClass } from "#types"
+
+export default class Entity implements SerializableClass<Entity> {
+  public readonly classes = [Entity]
   public readonly EID: number
   private static nextEID: number = 0
   private static recycledEID: Set<number> = new Set()

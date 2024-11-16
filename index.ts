@@ -29,5 +29,6 @@ export type {
   SerializedPrimitive,
   SerializedValueType,
   SerializedData,
+  SerializableClass,
   SerializerConfig
 } from "#types"

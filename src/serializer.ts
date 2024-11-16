@@ -10,18 +10,19 @@ import type {
   SerializedArray,
   SerializedMap,
   SerializedSet,
-  SerializedObject
+  SerializedObject,
+  SerializableClass
 } from "#types"
 
 export default class Serializer<T, R = SerializedValueType<T>> {
   private readonly serializeHandler: CustomSerializeHandler<T, R> | undefined
   private readonly deserializeHandler: CustomDeserializeHandler<T, R> | undefined
-  private readonly classes: Array<Constructor<unknown>>
+  private classes: Array<Constructor<T>>
 
   constructor(config?: SerializerConfig<T, R>) {
     this.serializeHandler = config?.serializeHandler
     this.deserializeHandler = config?.deserializeHandler
-    this.classes = [...(Array.isArray(config?.classes) ? config.classes : config?.classes !== undefined ? [config.classes] : [])]
+    this.classes = []
   }
 
   public serialize(obj: T): SerializedData<R> | undefined {
@@ -137,7 +138,13 @@ export default class Serializer<T, R = SerializedValueType<T>> {
 
   private serializeObject(obj: object): SerializedData<R> {
     const entries: SerializedObject<R> = new Array()
+    if ((obj as SerializableClass<T>).classes) {
+      for (const clazz of (obj as SerializableClass<T>).classes) {
+        this.classes.push(clazz)
+      }
+    }
     for (const [key, value] of Object.entries(obj)) {
+      if (key === "classes") continue
       const serializedValue = this.serialize(value)
       if (serializedValue) {
         entries.push([key, serializedValue] as [keyof R & string, SerializedData<R[keyof R]>])
