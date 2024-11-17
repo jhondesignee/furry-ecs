@@ -3,9 +3,10 @@ import { DEFAULT_WORLD_SIZE, Status } from "#constants"
 import type Entity from "#entity"
 import type Component from "#component"
 import type System from "#system"
-import type { WorldConfig } from "#types"
+import type { WorldConfig, SerializableClass } from "#types"
 
-export default class World {
+export default class World implements SerializableClass<World | Storage<any>> {
+  public readonly classes = [World, Storage]
   public readonly entities: Storage<Entity>
   public readonly components: Storage<Component>
   public readonly systems: Storage<System>

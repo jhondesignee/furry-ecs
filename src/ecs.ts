@@ -2,14 +2,12 @@ import Entity from "#entity"
 import Component from "#component"
 import System from "#system"
 import Query from "#query"
+import Serializer from "#serializer"
 import World from "#world"
-import { ComponentType, Status } from "#constants"
-import type { ComponentSchema, SystemConfig, QueryConfig } from "#types"
+import { ComponentType } from "#constants"
+import type { ComponentSchema, SystemConfig, QueryConfig, SerializerConfig, SerializedValueType } from "#types"
 
 export default class ECS {
-  public static readonly ComponentType = ComponentType
-  public static readonly Status = Status
-
   public static createWorld(): World {
     return new World()
   }
@@ -28,6 +26,10 @@ export default class ECS {
 
   public static defineQuery(queryConfig?: QueryConfig): Query {
     return new Query(queryConfig)
+  }
+
+  public static defineSerializer<T, R = SerializedValueType<T>>(serializerConfig?: SerializerConfig<T, R>): Serializer<T, R> {
+    return new Serializer<T, R>(serializerConfig)
   }
 
   public static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean> {

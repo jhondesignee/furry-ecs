@@ -1,9 +1,10 @@
 import Storage from "#storage"
 import { DEFAULT_WORLD_SIZE, DEFAULT_ARRAY_SIZE, ComponentType } from "#constants"
 import type Entity from "#entity"
-import type { ComponentSchema, ComponentProps, DeprecatedComponentSchema } from "#types"
+import type { ComponentSchema, ComponentProps, DeprecatedComponentSchema, SerializableClass } from "#types"
 
-export default class Component<Schema extends ComponentSchema<ComponentType> = {}> {
+export default class Component<Schema extends ComponentSchema<ComponentType> = {}> implements SerializableClass<Component<any> | Storage<any>> {
+  public readonly classes = [Component, Storage]
   public readonly props: ComponentProps<Schema>
   public readonly entities: Storage<Entity>
   public readonly size: number
@@ -38,7 +39,6 @@ export default class Component<Schema extends ComponentSchema<ComponentType> = {
       Object.entries(schema).map(([key, { type, length }]) => {
         switch (type) {
           case ComponentType.NUMBER:
-            // TODO: replace hardcoded size by the component size
             return [key, new Array(this.size).fill(0)]
           case ComponentType.ARRAY:
             length ??= DEFAULT_ARRAY_SIZE

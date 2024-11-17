@@ -4,6 +4,7 @@ import Entity from "#entity"
 import Component from "#component"
 import System from "#system"
 import Query from "#query"
+import Serializer from "#serializer"
 import World from "#world"
 
 describe("ECS class test", () => {
@@ -21,6 +22,9 @@ describe("ECS class test", () => {
   })
   test("defineQuery should return a Query class instance", () => {
     expect(ECS.defineQuery()).toBeInstanceOf(Query)
+  })
+  test("defineQuery should return a Serializer class instance", () => {
+    expect(ECS.defineSerializer()).toBeInstanceOf(Serializer)
   })
   describe("Entity management methods test", () => {
     let world1: World
