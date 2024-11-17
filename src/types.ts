@@ -39,16 +39,15 @@ export interface WorldConfig {
 export type Constructor<T> = new (...args: any) => T
 export type CustomSerializeHandler<T, R> = (obj: T, self: Serializer<T, R>) => SerializedData<R> | undefined
 export type CustomDeserializeHandler<T, R> = (obj: SerializedData<R>, self: Serializer<T, R>) => T | R | undefined
-export type SerializableKey = string | number | boolean
 export type SerializedArray<T> = Array<SerializedData<T>>
-export type SerializedMap<K, V> = Array<[SerializedData<K & SerializableKey>, SerializedData<V>]>
+export type SerializedMap<T> = Array<[SerializedData<keyof T>, SerializedData<T[keyof T]>]>
 export type SerializedSet<T> = Array<SerializedData<T>>
 export type SerializedObject<T> = Array<[keyof T & string, SerializedData<T[keyof T]>]>
 export type SerializedPrimitive = number | string | boolean
 export type SerializedValueType<T> = T extends Array<infer U>
   ? SerializedArray<U>
-  : T extends Map<infer K, infer V>
-  ? SerializedMap<K, V>
+  : T extends Map<unknown, unknown>
+  ? SerializedMap<T>
   : T extends Set<infer U>
   ? SerializedSet<U>
   : T extends object

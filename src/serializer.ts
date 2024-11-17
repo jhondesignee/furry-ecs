@@ -4,7 +4,6 @@ import type {
   SerializerConfig,
   CustomSerializeHandler,
   CustomDeserializeHandler,
-  SerializableKey,
   SerializedData,
   SerializedValueType,
   SerializedArray,
@@ -17,7 +16,7 @@ import type {
 export default class Serializer<T, R = SerializedValueType<T>> {
   private readonly serializeHandler: CustomSerializeHandler<T, R> | undefined
   private readonly deserializeHandler: CustomDeserializeHandler<T, R> | undefined
-  private classes: Array<Constructor<T>>
+  private readonly classes: Array<Constructor<T>>
 
   constructor(config?: SerializerConfig<T, R>) {
     this.serializeHandler = config?.serializeHandler
@@ -106,12 +105,12 @@ export default class Serializer<T, R = SerializedValueType<T>> {
   }
 
   private serializeMap(map: Map<unknown, unknown>): SerializedData<R> {
-    const entries: SerializedMap<keyof R, R[keyof R]> = new Array()
+    const entries: SerializedMap<R> = new Array()
     for (const [key, value] of map) {
-      const serializedKey = this.serialize(key as T)
-      const serializedValue = this.serialize(value as T)
+      const serializedKey = this.serialize(key as T) as SerializedData<keyof R> | undefined
+      const serializedValue = this.serialize(value as T) as SerializedData<R[keyof R]> | undefined
       if (serializedKey && serializedValue) {
-        entries.push([serializedKey, serializedValue] as [SerializedData<keyof R & SerializableKey>, SerializedData<R[keyof R]>])
+        entries.push([serializedKey, serializedValue])
       }
     }
     return {
@@ -170,8 +169,8 @@ export default class Serializer<T, R = SerializedValueType<T>> {
 
   private deserializeMap(obj: SerializedData<R>): T | R {
     const result = new Map()
-    for (const [key, value] of obj.value as unknown as SerializedMap<keyof R, R[keyof R]>) {
-      const deserializedKey = this.deserialize(key as SerializedData<R>)
+    for (const [key, value] of obj.value as SerializedMap<R>) {
+      const deserializedKey = this.deserialize(key as unknown as SerializedData<R>)
       const deserializedValue = this.deserialize(value as SerializedData<R>)
       if (deserializedKey !== undefined && deserializedValue !== undefined) {
         result.set(deserializedKey, deserializedValue)

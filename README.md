@@ -36,7 +36,7 @@ Furry ECS is a TypeScript Entity-component-system library
 ## Example
 
 ```typescript
-import ECS from "furry-ecs"
+import ECS, { Constants } from "furry-ecs"
 
 const world = ECS.createWorld()
 
@@ -45,21 +45,27 @@ const entity2 = ECS.createEntity()
 
 const component1 = ECS.defineComponent({
   foo: {
-    type: ECS.ComponentType.NUMBER
+    type: Constants.ComponentType.NUMBER
   },
   bar: {
-    type: ECS.ComponentType.NUMBER
+    type: Constants.ComponentType.NUMBER
   }
 })
 const component2 = ECS.defineComponent({
   baz: {
-    type: ECS.ComponentType.ARRAY,
+    type: Constants.ComponentType.ARRAY,
     length: 2
   }
 })
 
 component1.props.foo[entity1.EID] = 0
 component2.props.baz[entity2.EID] = [0, 1]
+
+const serializer = ECS.defineSerializer<typeof world>()
+const serialized = serializer.serialize(world)
+if (serialized) {
+  const deserialized = serializer.deserialize(serialized)
+}
 
 const query = ECS.defineQuery({
   include: [component1],
@@ -69,8 +75,8 @@ const query = ECS.defineQuery({
 const system1 = ECS.defineSystem({
   update(world, delta, time) {
     const entities = query.exec(world)
-    const addedEntities = query.exec(world, ECS.Status.ADDED)
-    const removedEntities = query.exec(world, ECS.Status.REMOVED)
+    const addedEntities = query.exec(world, Constants.Status.ADDED)
+    const removedEntities = query.exec(world, Constants.Status.REMOVED)
   }
 })
 const system2 = ECS.defineSystem({

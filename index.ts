@@ -21,7 +21,6 @@ export type {
   Constructor,
   CustomSerializeHandler,
   CustomDeserializeHandler,
-  SerializableKey,
   SerializedArray,
   SerializedMap,
   SerializedSet,

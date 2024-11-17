@@ -4,13 +4,10 @@ import System from "#system"
 import Query from "#query"
 import Serializer from "#serializer"
 import World from "#world"
-import { ComponentType, Status } from "#constants"
+import { ComponentType } from "#constants"
 import type { ComponentSchema, SystemConfig, QueryConfig, SerializerConfig, SerializedValueType } from "#types"
 
 export default class ECS {
-  public static readonly ComponentType = ComponentType
-  public static readonly Status = Status
-
   public static createWorld(): World {
     return new World()
   }
