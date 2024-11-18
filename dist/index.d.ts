@@ -78,10 +78,10 @@ declare class World implements SerializableClass<World | Storage<any>> {
     readonly size: number;
     constructor(config?: WorldConfig);
     addEntity(entity: Entity): boolean;
-    addComponent(entity: Entity, component: Component): boolean;
+    addComponent(component: Component): boolean;
     addSystem(system: System): boolean;
     removeEntity(entity: Entity): boolean;
-    removeComponent(entity: Entity, component: Component): boolean;
+    removeComponent(component: Component): boolean;
     removeSystem(system: System): boolean;
     update(delta: number, time: number, args?: Array<unknown>): void;
     destroy(): void;
@@ -183,11 +183,13 @@ declare class ECS {
     static defineQuery(queryConfig?: QueryConfig): Query;
     static defineSerializer<T, R = SerializedValueType<T>>(serializerConfig?: SerializerConfig<T, R>): Serializer<T, R>;
     static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static addComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): Array<boolean>;
+    static addComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
     static addSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
     static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static removeComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): Array<boolean>;
+    static removeComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
     static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
+    static attachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
+    static detachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
     static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void;
     static destroyWorld(worlds: World | Array<World>): void;
 }
