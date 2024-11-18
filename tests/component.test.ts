@@ -1,6 +1,7 @@
 // @ts-nocheck inconsistent type check behavior for components with unrecognized type
 import { describe, test, expect } from "vitest"
 import Component from "#component"
+import Entity from "#entity"
 import { DEFAULT_WORLD_SIZE, DEFAULT_ARRAY_SIZE, ComponentType } from "#constants"
 
 describe.concurrent("Component class test", () => {
@@ -23,5 +24,11 @@ describe.concurrent("Component class test", () => {
       auauauauaua: null
     })
     expect(component3.props).toStrictEqual({})
+  })
+  test("Attach entity out of range should return false", () => {
+    const component = new Component({}, 2)
+    expect(component.attachEntity(new Entity())).toBeTruthy()
+    expect(component.attachEntity(new Entity())).toBeTruthy()
+    expect(component.attachEntity(new Entity())).toBeFalsy()
   })
 })
