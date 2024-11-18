@@ -1,6 +1,7 @@
 // @ts-nocheck inconsistent type check behavior for components with unrecognized type
 import { describe, test, expect } from "vitest"
 import Component from "#component"
+import Entity from "#entity"
 import { DEFAULT_WORLD_SIZE, DEFAULT_ARRAY_SIZE, ComponentType } from "#constants"
 
 describe.concurrent("Component class test", () => {
@@ -24,16 +25,10 @@ describe.concurrent("Component class test", () => {
     })
     expect(component3.props).toStrictEqual({})
   })
-  test("Deprecated scheme should be resolved", () => {
-    const component = new Component({
-      foo: ComponentType.NUMBER,
-      bar: ComponentType.ARRAY,
-      baz: 2 as const
-    })
-    expect(component.props).toStrictEqual({
-      foo: new Array(DEFAULT_WORLD_SIZE).fill(0),
-      bar: Array.from({ length: DEFAULT_WORLD_SIZE }, () => new Array(DEFAULT_ARRAY_SIZE).fill(0)),
-      baz: null
-    })
+  test("Attach entity out of range should return false", () => {
+    const component = new Component({}, 2)
+    expect(component.attachEntity(new Entity())).toBeTruthy()
+    expect(component.attachEntity(new Entity())).toBeTruthy()
+    expect(component.attachEntity(new Entity())).toBeFalsy()
   })
 })

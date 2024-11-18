@@ -19,12 +19,6 @@ export default class World implements SerializableClass<World | Storage<any>> {
     this.size = config?.size || DEFAULT_WORLD_SIZE
   }
 
-  /* istanbul ignore next */
-  get hasChanged(): boolean {
-    console.warn("Deprecation warning: 'this.hasChanged' is deprecated. Use 'this.entities.hasChanged' instead")
-    return false
-  }
-
   public addEntity(entity: Entity): boolean {
     if (this.entities.length(true) >= this.size) {
       return false
@@ -32,15 +26,11 @@ export default class World implements SerializableClass<World | Storage<any>> {
     return this.entities.addData(entity)
   }
 
-  public addComponent(entity: Entity, component: Component): boolean {
+  public addComponent(component: Component): boolean {
     if (this.components.length(true) >= this.size) {
       return false
     }
-    if (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) {
-      this.components.addData(component)
-      return component.attachEntity(entity)
-    }
-    return false
+    return this.components.addData(component)
   }
 
   public addSystem(system: System): boolean {
@@ -52,25 +42,17 @@ export default class World implements SerializableClass<World | Storage<any>> {
   }
 
   public removeEntity(entity: Entity): boolean {
-    for (const component of this.components.keys()) {
-      if (component.entities.hasData(entity) || component.entities.hasDeferredData(entity)) {
-        this.removeComponent(entity, component)
+    const removed = this.entities.removeData(entity)
+    if (removed) {
+      for (const component of this.components.keys()) {
+        component.entities.removeData(entity)
       }
     }
-    if (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) {
-      return this.entities.removeData(entity)
-    }
-    return false
+    return removed
   }
 
-  public removeComponent(entity: Entity, component: Component): boolean {
-    if (
-      (this.entities.hasData(entity) || this.entities.hasDeferredData(entity)) &&
-      (this.components.hasData(component) || this.components.hasDeferredData(component))
-    ) {
-      return component.detachEntity(entity)
-    }
-    return false
+  public removeComponent(component: Component): boolean {
+    return this.components.removeData(component)
   }
 
   public removeSystem(system: System): boolean {
@@ -96,9 +78,6 @@ export default class World implements SerializableClass<World | Storage<any>> {
     this.components.commitChanges()
     for (const component of this.components.keys()) {
       component.entities.commitChanges()
-      if (component.entities.length() === 0) {
-        this.components.removeData(component, true)
-      }
     }
     this.systems.commitChanges()
   }

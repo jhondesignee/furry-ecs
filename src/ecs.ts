@@ -44,20 +44,13 @@ export default class ECS {
     return changes
   }
 
-  public static addComponent(
-    worlds: World | Array<World>,
-    entities: Entity | Array<Entity>,
-    components: Component | Array<Component>
-  ): Array<boolean> {
+  public static addComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
-    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
     const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
-      for (const entity of entityArray) {
-        for (const component of componentArray) {
-          changes.push(world.addComponent(entity, component))
-        }
+      for (const component of componentArray) {
+        changes.push(world.addComponent(component))
       }
     }
     return changes
@@ -87,20 +80,13 @@ export default class ECS {
     return changes
   }
 
-  public static removeComponent(
-    worlds: World | Array<World>,
-    entities: Entity | Array<Entity>,
-    components: Component | Array<Component>
-  ): Array<boolean> {
+  public static removeComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
-    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
     const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
-      for (const entity of entityArray) {
-        for (const component of componentArray) {
-          changes.push(world.removeComponent(entity, component))
-        }
+      for (const component of componentArray) {
+        changes.push(world.removeComponent(component))
       }
     }
     return changes
@@ -113,6 +99,30 @@ export default class ECS {
     for (const world of worldArray) {
       for (const system of systemArray) {
         changes.push(world.removeSystem(system))
+      }
+    }
+    return changes
+  }
+
+  public static attachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean> {
+    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    const changes: Array<boolean> = new Array()
+    for (const component of componentArray) {
+      for (const entity of entityArray) {
+        changes.push(component.attachEntity(entity))
+      }
+    }
+    return changes
+  }
+
+  public static detachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean> {
+    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
+    const changes: Array<boolean> = new Array()
+    for (const component of componentArray) {
+      for (const entity of entityArray) {
+        changes.push(component.detachEntity(entity))
       }
     }
     return changes

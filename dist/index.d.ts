@@ -57,11 +57,10 @@ declare class Component<Schema extends ComponentSchema<ComponentType> = {}> impl
     readonly props: ComponentProps<Schema>;
     readonly entities: Storage<Entity>;
     readonly size: number;
-    constructor(schema?: Schema | DeprecatedComponentSchema, size?: number);
+    constructor(schema?: Schema, size?: number);
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
     private createProperties;
-    private resolveDeprecatedSchema;
 }
 
 declare class System {
@@ -78,12 +77,11 @@ declare class World implements SerializableClass<World | Storage<any>> {
     readonly systems: Storage<System>;
     readonly size: number;
     constructor(config?: WorldConfig);
-    get hasChanged(): boolean;
     addEntity(entity: Entity): boolean;
-    addComponent(entity: Entity, component: Component): boolean;
+    addComponent(component: Component): boolean;
     addSystem(system: System): boolean;
     removeEntity(entity: Entity): boolean;
-    removeComponent(entity: Entity, component: Component): boolean;
+    removeComponent(component: Component): boolean;
     removeSystem(system: System): boolean;
     update(delta: number, time: number, args?: Array<unknown>): void;
     destroy(): void;
@@ -116,7 +114,6 @@ type ComponentSchema<T> = {
         length?: T extends ComponentType.NUMBER ? undefined : number;
     };
 };
-type DeprecatedComponentSchema = Record<string, ComponentType>;
 type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
     [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER ? Array<number> : Schema[K]["type"] extends ComponentType.ARRAY ? Array<Array<number>> : null;
 };
@@ -186,11 +183,13 @@ declare class ECS {
     static defineQuery(queryConfig?: QueryConfig): Query;
     static defineSerializer<T, R = SerializedValueType<T>>(serializerConfig?: SerializerConfig<T, R>): Serializer<T, R>;
     static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static addComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): Array<boolean>;
+    static addComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
     static addSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
     static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static removeComponent(worlds: World | Array<World>, entities: Entity | Array<Entity>, components: Component | Array<Component>): Array<boolean>;
+    static removeComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
     static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
+    static attachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
+    static detachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
     static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void;
     static destroyWorld(worlds: World | Array<World>): void;
 }

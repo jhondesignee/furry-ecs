@@ -50,7 +50,6 @@ here are the type definition and description for all the members of Furry ECS li
 - [SystemUpdateFunction](#system-update-function)
 - [SystemDestroyFunction](#system-destroy-function)
 - [ComponentSchema](#component-schema)
-- [DeprecatedComponentSchema](#deprecated-component-schema)
 - [ComponentProps](#component-props)
 - [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
@@ -153,14 +152,6 @@ here are the type definition and description for all the members of Furry ECS li
   - **[key: string]: { type: T; length?: T _extends_ ComponentType.NUMBER ? undefined : number }**
 
     The component properties
-
-- ## **`DeprecatedComponentSchema: type`** <a name="deprecated-component-schema"></a>
-
-  Represents the old type definition for component schema
-
-  ### returns
-
-  - **Record\<string, ComponentType\>**
 
 - ## **`ComponentProps: type`** <a name="component-props"></a>
 
@@ -488,7 +479,7 @@ here are the type definition and description for all the members of Furry ECS li
 
 - ## **`Serializable: enum`** <a name="serializable"></a>
 
-  Set of serializable values
+  Enum of serializable values
 
   ### properties
 
@@ -516,7 +507,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Represents a set object
 
-  - **OBJEC5: 6**
+  - **OBJECT: 6**
 
     Represents a plain object or a class
 
@@ -548,7 +539,7 @@ here are the type definition and description for all the members of Furry ECS li
 
 - ## **`ECS: class`** <a name="ecs"></a>
 
-  Utility class to centralize access to resources
+  Utility class to facilitate multiple members management
 
   ### methods
 
@@ -576,29 +567,37 @@ here are the type definition and description for all the members of Furry ECS li
 
     Creates a Serializer instance
 
-  - **_public static_ addEntity(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>): boolean**
+  - **_public static_ addEntity(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
 
     Adds entities to the world
 
-  - **_public static_ addComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): boolean**
+  - **_public static_ addComponent(worlds: World | Array\<World\>, components: Component | Array\<Component\>): Array\<boolean\>**
 
-    Adds components to entities in the world
+    Adds components to the world
 
-  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): boolean**
+  - **_public static_ addSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): Array\<boolean\>**
 
     Adds systems to the world
 
-  - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): boolean**
+  - **_public static_ removeEntity(worlds: World | Array<\World\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
 
     Removes entities from the world
 
-  - **_public static_ removeComponent(worlds: World | Array\<World\>, entities: Entity | Array\<Entity\>, components: Component | Array\<Component\>): boolean**
+  - **_public static_ removeComponent(worlds: World | Array\<World\>, components: Component | Array\<Component\>): Array\<boolean\>**
 
     Removes components from entities in the world
 
-  - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): boolean**
+  - **_public static_ removeSystem(worlds: World | Array\<World\>, systems: System | Array\<System\>): Array\<boolean\>**
 
     Removes systems from the world
+
+  - **_public static_ attachEntity(components: Component | Array\<Component\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
+
+    Attaches entities to components
+
+  - **_public static_ detachEntity(components: Component | Array\<Component\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
+
+    Detaches entities from components
 
   - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number, ...args: Array\<unknown\>): void**
 
@@ -676,9 +675,9 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### arguments
 
-  - **schema?: Schema | DeprecatedComponentSchema**
+  - **schema?: Schema**
 
-    The properties structure. An empty object can be used for the component act like a tag
+    The properties structure. An empty object can be used so the component acts like a tag
 
   - **size?: number**
 
@@ -697,10 +696,6 @@ here are the type definition and description for all the members of Furry ECS li
   - **_private_ createProperties\<Schema _extends_ ComponentSchema\<ComponentType\>\>(schema: Schema): ComponentProps\<Schema\>**
 
     Creates the properties structure
-
-  - **_private_ resolveDeprecatedSchema(deprecatedSchema: DeprecatedComponentSchema): Schema**
-
-    Resolves the old schema structure into the new schema
 
 - ## **`System: class`** <a name="system"></a>
 
@@ -971,10 +966,6 @@ here are the type definition and description for all the members of Furry ECS li
     Represents the world configuration structure
 
   ### methods
-
-  - **_get_ hasChanged(): boolean**
-
-    DEPRECATED! Check if has changes in the entities map
 
   - **_public_ addEntity(entity: Entity): boolean**
 

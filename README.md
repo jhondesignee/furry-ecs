@@ -90,7 +90,8 @@ const system2 = ECS.defineSystem({
 })
 
 ECS.addEntity(world, [entity1, entity2])
-ECS.addComponent(world, [entity1, entity2], [component1, component2])
+ECS.addComponent(world, [component1, component2])
+ECS.attachEntity([component1, component2], [entity1, entity2])
 ECS.addSystem(world, [system1, system2])
 
 // loop

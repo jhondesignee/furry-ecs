@@ -1,7 +1,7 @@
 import Storage from "#storage"
 import { DEFAULT_WORLD_SIZE, DEFAULT_ARRAY_SIZE, ComponentType } from "#constants"
 import type Entity from "#entity"
-import type { ComponentSchema, ComponentProps, DeprecatedComponentSchema, SerializableClass } from "#types"
+import type { ComponentSchema, ComponentProps, SerializableClass } from "#types"
 
 export default class Component<Schema extends ComponentSchema<ComponentType> = {}> implements SerializableClass<Component<any> | Storage<any>> {
   public readonly classes = [Component, Storage]
@@ -9,17 +9,10 @@ export default class Component<Schema extends ComponentSchema<ComponentType> = {
   public readonly entities: Storage<Entity>
   public readonly size: number
 
-  constructor(schema?: Schema | DeprecatedComponentSchema, size?: number) {
+  constructor(schema?: Schema, size?: number) {
     this.size = size || DEFAULT_WORLD_SIZE
-    schema ??= {}
-    let resolvedSchema: Schema | undefined
-    for (const value of Object.values(schema)) {
-      if (typeof value !== "object") {
-        resolvedSchema = this.resolveDeprecatedSchema(schema as DeprecatedComponentSchema)
-        break
-      }
-    }
-    this.props = this.createProperties((resolvedSchema as Schema) || schema)
+    schema ??= {} as Schema
+    this.props = this.createProperties(schema)
     this.entities = new Storage()
   }
 
@@ -48,19 +41,5 @@ export default class Component<Schema extends ComponentSchema<ComponentType> = {
         }
       })
     ) as ComponentProps<Schema>
-  }
-
-  private resolveDeprecatedSchema(deprecatedSchema: DeprecatedComponentSchema): Schema {
-    let schema: ComponentSchema<ComponentType> = {}
-    for (const [key, value] of Object.entries(deprecatedSchema)) {
-      if (value === ComponentType.NUMBER) {
-        schema[key] = { type: value }
-      } else if (value === ComponentType.ARRAY) {
-        schema[key] = { type: value, length: DEFAULT_ARRAY_SIZE }
-      } else {
-        schema[key] = { type: value }
-      }
-    }
-    return schema as Schema
   }
 }
