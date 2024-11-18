@@ -12,7 +12,6 @@ export type ComponentSchema<T> = {
     length?: T extends ComponentType.NUMBER ? undefined : number
   }
 }
-export type DeprecatedComponentSchema = Record<string, ComponentType>
 export type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
   [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER
     ? Array<number>

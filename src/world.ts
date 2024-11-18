@@ -19,12 +19,6 @@ export default class World implements SerializableClass<World | Storage<any>> {
     this.size = config?.size || DEFAULT_WORLD_SIZE
   }
 
-  /* istanbul ignore next */
-  get hasChanged(): boolean {
-    console.warn("Deprecation warning: 'this.hasChanged' is deprecated. Use 'this.entities.hasChanged' instead")
-    return false
-  }
-
   public addEntity(entity: Entity): boolean {
     if (this.entities.length(true) >= this.size) {
       return false

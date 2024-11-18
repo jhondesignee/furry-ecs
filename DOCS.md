@@ -50,7 +50,6 @@ here are the type definition and description for all the members of Furry ECS li
 - [SystemUpdateFunction](#system-update-function)
 - [SystemDestroyFunction](#system-destroy-function)
 - [ComponentSchema](#component-schema)
-- [DeprecatedComponentSchema](#deprecated-component-schema)
 - [ComponentProps](#component-props)
 - [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
@@ -153,14 +152,6 @@ here are the type definition and description for all the members of Furry ECS li
   - **[key: string]: { type: T; length?: T _extends_ ComponentType.NUMBER ? undefined : number }**
 
     The component properties
-
-- ## **`DeprecatedComponentSchema: type`** <a name="deprecated-component-schema"></a>
-
-  Represents the old type definition for component schema
-
-  ### returns
-
-  - **Record\<string, ComponentType\>**
 
 - ## **`ComponentProps: type`** <a name="component-props"></a>
 

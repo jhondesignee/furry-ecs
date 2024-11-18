@@ -57,11 +57,10 @@ declare class Component<Schema extends ComponentSchema<ComponentType> = {}> impl
     readonly props: ComponentProps<Schema>;
     readonly entities: Storage<Entity>;
     readonly size: number;
-    constructor(schema?: Schema | DeprecatedComponentSchema, size?: number);
+    constructor(schema?: Schema, size?: number);
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
     private createProperties;
-    private resolveDeprecatedSchema;
 }
 
 declare class System {
@@ -78,7 +77,6 @@ declare class World implements SerializableClass<World | Storage<any>> {
     readonly systems: Storage<System>;
     readonly size: number;
     constructor(config?: WorldConfig);
-    get hasChanged(): boolean;
     addEntity(entity: Entity): boolean;
     addComponent(entity: Entity, component: Component): boolean;
     addSystem(system: System): boolean;
@@ -116,7 +114,6 @@ type ComponentSchema<T> = {
         length?: T extends ComponentType.NUMBER ? undefined : number;
     };
 };
-type DeprecatedComponentSchema = Record<string, ComponentType>;
 type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
     [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER ? Array<number> : Schema[K]["type"] extends ComponentType.ARRAY ? Array<Array<number>> : null;
 };

@@ -24,16 +24,4 @@ describe.concurrent("Component class test", () => {
     })
     expect(component3.props).toStrictEqual({})
   })
-  test("Deprecated scheme should be resolved", () => {
-    const component = new Component({
-      foo: ComponentType.NUMBER,
-      bar: ComponentType.ARRAY,
-      baz: 2 as const
-    })
-    expect(component.props).toStrictEqual({
-      foo: new Array(DEFAULT_WORLD_SIZE).fill(0),
-      bar: Array.from({ length: DEFAULT_WORLD_SIZE }, () => new Array(DEFAULT_ARRAY_SIZE).fill(0)),
-      baz: null
-    })
-  })
 })

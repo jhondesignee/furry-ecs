@@ -6,13 +6,8 @@ export default class System {
   public readonly destroy: SystemDestroyFunction | undefined
 
   constructor(config?: SystemConfig) {
-    /* istanbul ignore if -- @preserve */
-    if (typeof config === "function") {
-      console.warn("Deprecation warning: config cannot be used as a function")
-    } else {
-      this.start = config?.start
-      this.update = config?.update
-      this.destroy = config?.destroy
-    }
+    this.start = config?.start
+    this.update = config?.update
+    this.destroy = config?.destroy
   }
 }
