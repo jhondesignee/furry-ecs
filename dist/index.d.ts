@@ -1,5 +1,4 @@
 declare const DEFAULT_WORLD_SIZE = 1000;
-declare const DEFAULT_ARRAY_SIZE = 1000;
 declare enum ComponentType {
     NUMBER = 0,
     ARRAY = 1
@@ -21,14 +20,13 @@ declare enum Serializable {
 
 type constants_ComponentType = ComponentType;
 declare const constants_ComponentType: typeof ComponentType;
-declare const constants_DEFAULT_ARRAY_SIZE: typeof DEFAULT_ARRAY_SIZE;
 declare const constants_DEFAULT_WORLD_SIZE: typeof DEFAULT_WORLD_SIZE;
 type constants_Serializable = Serializable;
 declare const constants_Serializable: typeof Serializable;
 type constants_Status = Status;
 declare const constants_Status: typeof Status;
 declare namespace constants {
-  export { constants_ComponentType as ComponentType, constants_DEFAULT_ARRAY_SIZE as DEFAULT_ARRAY_SIZE, constants_DEFAULT_WORLD_SIZE as DEFAULT_WORLD_SIZE, constants_Serializable as Serializable, constants_Status as Status };
+  export { constants_ComponentType as ComponentType, constants_DEFAULT_WORLD_SIZE as DEFAULT_WORLD_SIZE, constants_Serializable as Serializable, constants_Status as Status };
 }
 
 declare class Storage<Data> {
@@ -52,12 +50,15 @@ declare class Storage<Data> {
     private cleanDeferredChanges;
 }
 
-declare class Component<Schema extends ComponentSchema<ComponentType> = {}> implements SerializableClass<Component<any> | Storage<any>> {
+declare class Component<T extends ComponentSchema> implements SerializableClass<Component<any> | Storage<any>> {
     readonly classes: (typeof Storage | typeof Component)[];
-    readonly props: ComponentProps<Schema>;
     readonly entities: Storage<Entity>;
     readonly size: number;
-    constructor(schema?: Schema, size?: number);
+    private readonly properties;
+    constructor(schema?: T, size?: number);
+    get props(): ComponentProps<T>;
+    getProp<K extends keyof T>(prop: K, EID: number): ComponentPropValue<T[K]> | undefined;
+    setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean;
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
     private createProperties;
@@ -73,15 +74,15 @@ declare class System {
 declare class World implements SerializableClass<World | Storage<any>> {
     readonly classes: (typeof Storage | typeof World)[];
     readonly entities: Storage<Entity>;
-    readonly components: Storage<Component>;
+    readonly components: Storage<Component<any>>;
     readonly systems: Storage<System>;
     readonly size: number;
     constructor(config?: WorldConfig);
     addEntity(entity: Entity): boolean;
-    addComponent(component: Component): boolean;
+    addComponent(component: Component<any>): boolean;
     addSystem(system: System): boolean;
     removeEntity(entity: Entity): boolean;
-    removeComponent(component: Component): boolean;
+    removeComponent(component: Component<any>): boolean;
     removeSystem(system: System): boolean;
     update(delta: number, time: number, args?: Array<unknown>): void;
     destroy(): void;
@@ -108,23 +109,17 @@ declare class Serializer<T, R = SerializedValueType<T>> {
 type SystemStartFunction = (world: World) => void;
 type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void;
 type SystemDestroyFunction = (world: World) => void;
-type ComponentSchema<T> = {
-    [key: string]: {
-        type: T;
-        length?: T extends ComponentType.NUMBER ? undefined : number;
-    };
-};
-type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
-    [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER ? Array<number> : Schema[K]["type"] extends ComponentType.ARRAY ? Array<Array<number>> : null;
-};
+type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : null;
+type ComponentSchema = Record<string, ComponentType>;
+type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>;
 interface SystemConfig {
     start?: SystemStartFunction;
     update: SystemUpdateFunction;
     destroy?: SystemDestroyFunction;
 }
 interface QueryConfig {
-    include: Array<Component>;
-    exclude?: Array<Component>;
+    include: Array<Component<any>>;
+    exclude?: Array<Component<any>>;
 }
 interface WorldConfig {
     size?: number;
@@ -178,18 +173,18 @@ declare class Query {
 declare class ECS {
     static createWorld(): World;
     static createEntity(): Entity;
-    static defineComponent<Schema extends ComponentSchema<ComponentType>>(schema?: Schema, size?: number): Component<Schema>;
+    static defineComponent<Schema extends ComponentSchema>(schema?: Schema, size?: number): Component<Schema>;
     static defineSystem(systemConfig?: SystemConfig): System;
     static defineQuery(queryConfig?: QueryConfig): Query;
     static defineSerializer<T, R = SerializedValueType<T>>(serializerConfig?: SerializerConfig<T, R>): Serializer<T, R>;
     static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static addComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
+    static addComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean>;
     static addSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
     static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
-    static removeComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean>;
+    static removeComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean>;
     static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
-    static attachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
-    static detachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean>;
+    static attachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
+    static detachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
     static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void;
     static destroyWorld(worlds: World | Array<World>): void;
 }
