@@ -6,17 +6,12 @@ import type { ComponentType, Serializable } from "#constants"
 export type SystemStartFunction = (world: World) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
 export type SystemDestroyFunction = (world: World) => void
-export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T["type"] extends ComponentType.NUMBER
+export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER
   ? number
-  : T["type"] extends ComponentType.ARRAY
+  : T extends ComponentType.ARRAY
   ? Array<number>
   : null
-export type ComponentSchema = {
-  [K: string]: {
-    type: ComponentType
-    value?: ComponentPropValue<ComponentSchema[keyof ComponentSchema]>
-  }
-}
+export type ComponentSchema = Record<string, ComponentType>
 export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>
 
 export interface SystemConfig {

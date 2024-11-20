@@ -6,18 +6,18 @@ import type { ComponentProps } from "#types"
 
 describe("Component class test", () => {
   let schema: {
-    foo: { type: ComponentType.NUMBER }
-    bar: { type: ComponentType.ARRAY }
-    baz: { type: 2 }
+    foo: ComponentType.NUMBER
+    bar: ComponentType.ARRAY
+    baz: 2
   }
   // @ts-expect-error incompatible property baz from schema
   let component: Component<typeof schema>
 
   beforeAll(() => {
     schema = {
-      foo: { type: ComponentType.NUMBER },
-      bar: { type: ComponentType.ARRAY },
-      baz: { type: 2 as const }
+      foo: ComponentType.NUMBER,
+      bar: ComponentType.ARRAY,
+      baz: 2 as const
     }
     // @ts-expect-error incompatible property baz from schema
     component = new Component(schema, 2)
