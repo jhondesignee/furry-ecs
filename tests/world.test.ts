@@ -48,9 +48,9 @@ describe("World class test", () => {
   })
   describe("Component addition test", () => {
     let world: World
-    let component1: Component
-    let component2: Component
-    let component3: Component
+    let component1: Component<any>
+    let component2: Component<any>
+    let component3: Component<any>
 
     beforeAll(() => {
       world = new World({ size: 2 })
@@ -178,8 +178,8 @@ describe("World class test", () => {
 
   describe("Component removal test", () => {
     let world: World
-    let component1: Component
-    let component2: Component
+    let component1: Component<any>
+    let component2: Component<any>
 
     beforeAll(() => {
       world = new World()
@@ -254,8 +254,8 @@ describe("World class test", () => {
     let world: World
     let entity1: Entity
     let entity2: Entity
-    let component1: Component
-    let component2: Component
+    let component1: Component<any>
+    let component2: Component<any>
     let system1: System
     let system2: System
 
@@ -348,7 +348,7 @@ describe("World class test", () => {
   describe("Same frame changes test", () => {
     let world: World
     let entity: Entity
-    let component: Component
+    let component: Component<any>
     let system: System
 
     beforeAll(() => {

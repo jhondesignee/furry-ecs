@@ -6,19 +6,18 @@ import type { ComponentType, Serializable } from "#constants"
 export type SystemStartFunction = (world: World) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
 export type SystemDestroyFunction = (world: World) => void
-export type ComponentSchema<T> = {
-  [key: string]: {
-    type: T
-    length?: T extends ComponentType.NUMBER ? undefined : number
+export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T["type"] extends ComponentType.NUMBER
+  ? number
+  : T["type"] extends ComponentType.ARRAY
+  ? Array<number>
+  : null
+export type ComponentSchema = {
+  [K: string]: {
+    type: ComponentType
+    value?: ComponentPropValue<ComponentSchema[keyof ComponentSchema]>
   }
 }
-export type ComponentProps<Schema extends ComponentSchema<ComponentType>> = {
-  [K in keyof Schema]: Schema[K]["type"] extends ComponentType.NUMBER
-    ? Array<number>
-    : Schema[K]["type"] extends ComponentType.ARRAY
-    ? Array<Array<number>>
-    : null
-}
+export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>
 
 export interface SystemConfig {
   start?: SystemStartFunction
@@ -27,8 +26,8 @@ export interface SystemConfig {
 }
 
 export interface QueryConfig {
-  include: Array<Component>
-  exclude?: Array<Component>
+  include: Array<Component<any>>
+  exclude?: Array<Component<any>>
 }
 
 export interface WorldConfig {

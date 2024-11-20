@@ -4,7 +4,6 @@ import System from "#system"
 import Query from "#query"
 import Serializer from "#serializer"
 import World from "#world"
-import { ComponentType } from "#constants"
 import type { ComponentSchema, SystemConfig, QueryConfig, SerializerConfig, SerializedValueType } from "#types"
 
 export default class ECS {
@@ -16,7 +15,7 @@ export default class ECS {
     return new Entity()
   }
 
-  public static defineComponent<Schema extends ComponentSchema<ComponentType>>(schema?: Schema, size?: number): Component<Schema> {
+  public static defineComponent<Schema extends ComponentSchema>(schema?: Schema, size?: number): Component<Schema> {
     return new Component(schema, size)
   }
 
@@ -44,9 +43,9 @@ export default class ECS {
     return changes
   }
 
-  public static addComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean> {
+  public static addComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
-    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    const componentArray: Array<Component<any>> = Array.isArray(components) ? components : [components]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
       for (const component of componentArray) {
@@ -80,9 +79,9 @@ export default class ECS {
     return changes
   }
 
-  public static removeComponent(worlds: World | Array<World>, components: Component | Array<Component>): Array<boolean> {
+  public static removeComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
-    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+    const componentArray: Array<Component<any>> = Array.isArray(components) ? components : [components]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
       for (const component of componentArray) {
@@ -104,8 +103,8 @@ export default class ECS {
     return changes
   }
 
-  public static attachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean> {
-    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+  public static attachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean> {
+    const componentArray: Array<Component<any>> = Array.isArray(components) ? components : [components]
     const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
     const changes: Array<boolean> = new Array()
     for (const component of componentArray) {
@@ -116,8 +115,8 @@ export default class ECS {
     return changes
   }
 
-  public static detachEntity(components: Component | Array<Component>, entities: Entity | Array<Entity>): Array<boolean> {
-    const componentArray: Array<Component> = Array.isArray(components) ? components : [components]
+  public static detachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean> {
+    const componentArray: Array<Component<any>> = Array.isArray(components) ? components : [components]
     const entityArray: Array<Entity> = Array.isArray(entities) ? entities : [entities]
     const changes: Array<boolean> = new Array()
     for (const component of componentArray) {

@@ -5,8 +5,8 @@ import type World from "#world"
 import type { QueryConfig } from "#types"
 
 export default class Query {
-  private readonly includeComponents: Set<Component>
-  private readonly excludeComponents: Set<Component>
+  private readonly includeComponents: Set<Component<any>>
+  private readonly excludeComponents: Set<Component<any>>
   private entities: Map<Entity, Status>
   private updated: boolean
 
