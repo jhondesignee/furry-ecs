@@ -49,6 +49,7 @@ here are the type definition and description for all the members of Furry ECS li
 - [SystemStartFunction](#system-start-function)
 - [SystemUpdateFunction](#system-update-function)
 - [SystemDestroyFunction](#system-destroy-function)
+- [ComponentPropValue](#component-prop-value)
 - [ComponentSchema](#component-schema)
 - [ComponentProps](#component-props)
 - [SystemConfig](#system-config)
@@ -67,7 +68,6 @@ here are the type definition and description for all the members of Furry ECS li
 - [SerializerConfig](#serializer-config)
 - [SerializableClass](#serializable-class)
 - [DEFAULT_WORLD_SIZE](#default-world-size)
-- [DEFAULT_ARRAY_SIZE](#default-array-size)
 - [ComponentType](#component-type)
 - [Status](#status)
 - [Serializable](#serializable)
@@ -137,35 +137,45 @@ here are the type definition and description for all the members of Furry ECS li
 
   - **void**
 
+- ## **`ComponentPropValue: type`** <a name="component-prop-value"></a>
+
+  Represents the type of a property value
+
+  ### generics
+
+  - **T _extends_ ComponentSchema[_keyof_ ComponentSchema]**
+
+    The enumerated type of the value
+
+  ### returns
+
+  - **T _extends_ ComponentType.NUMBER<br>? number<br>: T _extends_ ComponentType.ARRAY<br>? Array<number><br>: null**
+
+    Conditionals type of the property value
+
 - ## **`ComponentSchema: type`** <a name="component-schema"></a>
 
   Represents a schema of properties
 
-  ### generics
+  ### returns
 
-  - **T**
-
-    Enum of possible types
-
-  ### properties
-
-  - **[key: string]: { type: T; length?: T _extends_ ComponentType.NUMBER ? undefined : number }**
+  - **Record\<string, ComponentType\>**
 
     The component properties
 
 - ## **`ComponentProps: type`** <a name="component-props"></a>
 
-  Represents each property mapped to an array
+  Represents each property mapped
 
   ### generics
 
-  - **Schema _extends_ ComponentSchema\<ComponentType\>**
+  - **T _extends_ ComponentSchema>**
 
     The properties schema
 
-  ### properties
+  ### returns
 
-  - **[K _in keyof_ Schema]: Schema[K]["type"] _extends_ ComponentType.NUMBER<br>? Array<number><br>: Schema[K]["type"] _extends_ ComponentType.ARRAY<br>? Array<Array<number>><br>: null**
+  - **Map\<_keyof_ T, Map\<number, ComponentPropValue\<T[_keyof_ T]\>\>\>**
 
     the component properties
 
@@ -193,11 +203,11 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **include: Array\<Component\>**
+  - **include: Array\<Component\<any\>\>**
 
     Defines all the components to be included in the entity query result
 
-  - **exclude?: Array\<Component\>**
+  - **exclude?: Array\<Component\<any\>\>**
 
     Defines all the components to be excluded from the entity query result
 
@@ -437,14 +447,6 @@ here are the type definition and description for all the members of Furry ECS li
 
   - **1000**
 
-- ## **`DEFAULT_ARRAY_SIZE: const`** <a name="default-array-size"></a>
-
-  Default length of property arrays
-
-  ### returns
-
-  - **100**
-
 - ## **`ComponentType: enum`** <a name="component-type"></a>
 
   Enum of all possible types of component properties
@@ -551,7 +553,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Creates an Entity instance
 
-  - **_public static_ defineComponent<Schema _extends_ ComponentSchema\<ComponentType\>\>(schema?: Schema, size?: number): Component\<Schema\>**
+  - **_public static_ defineComponent<Schema _extends_ ComponentSchema\>(schema?: Schema, size?: number): Component\<Schema\>**
 
     Creates a Component instance
 
@@ -571,7 +573,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Adds entities to the world
 
-  - **_public static_ addComponent(worlds: World | Array\<World\>, components: Component | Array\<Component\>): Array\<boolean\>**
+  - **_public static_ addComponent(worlds: World | Array\<World\>, components: Component\<any\> | Array\<Component\<any\>\>): Array\<boolean\>**
 
     Adds components to the world
 
@@ -583,7 +585,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Removes entities from the world
 
-  - **_public static_ removeComponent(worlds: World | Array\<World\>, components: Component | Array\<Component\>): Array\<boolean\>**
+  - **_public static_ removeComponent(worlds: World | Array\<World\>, components: Component\<any\> | Array\<Component\<any\>\>): Array\<boolean\>**
 
     Removes components from entities in the world
 
@@ -591,11 +593,11 @@ here are the type definition and description for all the members of Furry ECS li
 
     Removes systems from the world
 
-  - **_public static_ attachEntity(components: Component | Array\<Component\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
+  - **_public static_ attachEntity(components: Component\<any\> | Array\<Component\<any\>\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
 
     Attaches entities to components
 
-  - **_public static_ detachEntity(components: Component | Array\<Component\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
+  - **_public static_ detachEntity(components: Component\<any\> | Array\<Component\<any\>\>, entities: Entity | Array\<Entity\>): Array\<boolean\>**
 
     Detaches entities from components
 
@@ -653,7 +655,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### generics
 
-  - **Schema _extends_ ComponentSchema\<ComponentType\> = {}**
+  - **T _extends_ ComponentSchema**
 
   ### implements
 
@@ -665,7 +667,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     The class definitions used to restore the instance
 
-  - **_public readonly_ props: ComponentProps<Schema>**
+  - **_public readonly_ properties: ComponentProps<T>**
 
     Stores all the entity properties as an array of specified type
 
@@ -675,7 +677,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### arguments
 
-  - **schema?: Schema**
+  - **schema?: T**
 
     The properties structure. An empty object can be used so the component acts like a tag
 
@@ -685,6 +687,18 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### methods
 
+  - **_public get_ props(): ComponentProps\<T\>**
+
+    Returns all the properties
+
+  - **_public_ getProp\<K _extends keyof_ T\>(prop: K, EID: number): ComponentPropValue\<T[K]\> | undefined**
+
+    Gets the property value of the entity
+
+  - **_public_ setProp\<K _extends keyof_ T, V _extends_ ComponentPropValue\<T[K]\>\>(prop: K, EID: number, value: V): boolean**
+
+    Sets the property value for the entity
+
   - **_public_ attachEntity(entity: Entity): boolean**
 
     Adds an entity to the component
@@ -693,7 +707,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Removes an entity from the component
 
-  - **_private_ createProperties\<Schema _extends_ ComponentSchema\<ComponentType\>\>(schema: Schema): ComponentProps\<Schema\>**
+  - **_private_ createProperties(schema: T): ComponentProps\<T\>**
 
     Creates the properties structure
 
@@ -727,11 +741,11 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### properties
 
-  - **_private readonly_ includeComponents: Set\<Component\>**
+  - **_private readonly_ includeComponents: Set\<Component\<any\>\>**
 
     Stores all the components that entities need to be included
 
-  - **_private readonly_ excludeComponents: Set\<Component\>**
+  - **_private readonly_ excludeComponents: Set\<Component\<any\>\>**
 
     Stores all the components that will exclude entities
 
@@ -947,7 +961,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Stores entities in the world
 
-  - **_public readonly_ components: Storage\<Component\>**
+  - **_public readonly_ components: Storage\<Component\<any\>\>**
 
     Stores components in the world
 
@@ -971,7 +985,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Adds an entity to the world
 
-  - **_public_ addComponent(component: Component): boolean**
+  - **_public_ addComponent(component: Component\<any\>): boolean**
 
     Adds a component to the world
 
@@ -983,7 +997,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Removes an entity from the world
 
-  - **_public_ removeComponent(component: Component): boolean**
+  - **_public_ removeComponent(component: Component\<any\>): boolean**
 
     Removes a component from the world
 

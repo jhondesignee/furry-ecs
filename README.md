@@ -44,22 +44,16 @@ const entity1 = ECS.createEntity()
 const entity2 = ECS.createEntity()
 
 const component1 = ECS.defineComponent({
-  foo: {
-    type: Constants.ComponentType.NUMBER
-  },
-  bar: {
-    type: Constants.ComponentType.NUMBER
-  }
+  foo: Constants.ComponentType.NUMBER,
+  bar: Constants.ComponentType.ARRAY
 })
 const component2 = ECS.defineComponent({
-  baz: {
-    type: Constants.ComponentType.ARRAY,
-    length: 2
-  }
+  baz: Constants.ComponentType.ARRAY
 })
 
-component1.props.foo[entity1.EID] = 0
-component2.props.baz[entity2.EID] = [0, 1]
+component1.setProp("foo", entity1.EID, 0)
+component2.setProp("baz", entity2.EID, [0, 1])
+const prop = component1.getProp("foo", entity1.EID)
 
 const serializer = ECS.defineSerializer<typeof world>()
 const serialized = serializer.serialize(world)

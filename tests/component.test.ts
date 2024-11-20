@@ -1,32 +1,51 @@
-// @ts-nocheck inconsistent type check behavior for components with unrecognized type
-import { describe, test, expect } from "vitest"
+import { beforeAll, describe, test, expect, expectTypeOf } from "vitest"
 import Component from "#component"
 import Entity from "#entity"
-import { DEFAULT_WORLD_SIZE, DEFAULT_ARRAY_SIZE, ComponentType } from "#constants"
+import { ComponentType } from "#constants"
+import type { ComponentProps } from "#types"
 
-describe.concurrent("Component class test", () => {
+describe("Component class test", () => {
+  let schema: {
+    foo: ComponentType.NUMBER
+    bar: ComponentType.ARRAY
+    baz: 2
+  }
+  // @ts-expect-error incompatible property baz from schema
+  let component: Component<typeof schema>
+
+  beforeAll(() => {
+    schema = {
+      foo: ComponentType.NUMBER,
+      bar: ComponentType.ARRAY,
+      baz: 2 as const
+    }
+    // @ts-expect-error incompatible property baz from schema
+    component = new Component(schema, 2)
+  })
+
   test("Properties should have the correct type of schema", () => {
-    const component1 = new Component({
-      foo: { type: ComponentType.NUMBER },
-      bar: { type: ComponentType.ARRAY, length: 10 }
-    })
-    const component2 = new Component({
-      baz: { type: ComponentType.ARRAY },
-      auauauauaua: { type: 2 as const }
-    })
-    const component3 = new Component({})
-    expect(component1.props).toStrictEqual({
-      foo: new Array(DEFAULT_WORLD_SIZE).fill(0),
-      bar: Array.from({ length: DEFAULT_WORLD_SIZE }, () => new Array(10).fill(0))
-    })
-    expect(component2.props).toStrictEqual({
-      baz: Array.from({ length: DEFAULT_WORLD_SIZE }, () => new Array(DEFAULT_ARRAY_SIZE).fill(0)),
-      auauauauaua: null
-    })
-    expect(component3.props).toStrictEqual({})
+    // @ts-expect-error
+    expectTypeOf(component.props).toEqualTypeOf<ComponentProps<typeof schema>>()
+  })
+  test("Properties should be set", () => {
+    expect(component.setProp("foo", 0, 0)).toBeTruthy()
+    expect(component.setProp("bar", 0, [0, 1, 2])).toBeTruthy()
+    // @ts-expect-error
+    expect(component.setProp("unknown", 0, 0)).toBeFalsy()
+  })
+  test("Properties should be get", () => {
+    expect(component.getProp("foo", 0)).toBe(0)
+    expect(component.getProp("foo", 1)).toBeUndefined()
+    expect(component.getProp("bar", 0)).toStrictEqual([0, 1, 2])
+    // @ts-expect-error
+    expect(component.getProp("unknown", 0)).toBeUndefined()
+  })
+  test("Set property out of range should return false", () => {
+    expect(component.setProp("foo", 1, 0)).toBeTruthy()
+    expect(component.setProp("foo", 2, 0)).toBeFalsy()
+    expect(component.setProp("foo", 3, 0)).toBeFalsy()
   })
   test("Attach entity out of range should return false", () => {
-    const component = new Component({}, 2)
     expect(component.attachEntity(new Entity())).toBeTruthy()
     expect(component.attachEntity(new Entity())).toBeTruthy()
     expect(component.attachEntity(new Entity())).toBeFalsy()

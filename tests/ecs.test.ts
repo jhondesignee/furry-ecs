@@ -79,8 +79,8 @@ describe("ECS class test", () => {
   describe("Component management methods test", () => {
     let world1: World
     let world2: World
-    let component1: Component
-    let component2: Component
+    let component1: Component<any>
+    let component2: Component<any>
 
     beforeAll(() => {
       world1 = ECS.createWorld()
@@ -178,8 +178,8 @@ describe("ECS class test", () => {
   })
   describe("Component entity management methods test", () => {
     let world: World
-    let component1: Component
-    let component2: Component
+    let component1: Component<any>
+    let component2: Component<any>
     let entity1: Entity
     let entity2: Entity
 
@@ -234,8 +234,8 @@ describe("ECS class test", () => {
     let world2: World
     let entity1: Entity
     let entity2: Entity
-    let component1: Component
-    let component2: Component
+    let component1: Component<any>
+    let component2: Component<any>
     let system1: System
     let system2: System
 

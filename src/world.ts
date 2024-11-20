@@ -8,7 +8,7 @@ import type { WorldConfig, SerializableClass } from "#types"
 export default class World implements SerializableClass<World | Storage<any>> {
   public readonly classes = [World, Storage]
   public readonly entities: Storage<Entity>
-  public readonly components: Storage<Component>
+  public readonly components: Storage<Component<any>>
   public readonly systems: Storage<System>
   public readonly size: number
 
@@ -26,7 +26,7 @@ export default class World implements SerializableClass<World | Storage<any>> {
     return this.entities.addData(entity)
   }
 
-  public addComponent(component: Component): boolean {
+  public addComponent(component: Component<any>): boolean {
     if (this.components.length(true) >= this.size) {
       return false
     }
@@ -51,7 +51,7 @@ export default class World implements SerializableClass<World | Storage<any>> {
     return removed
   }
 
-  public removeComponent(component: Component): boolean {
+  public removeComponent(component: Component<any>): boolean {
     return this.components.removeData(component)
   }
 

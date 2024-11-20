@@ -12,11 +12,11 @@ describe("Query class test", () => {
   let entity3: Entity
   let entity4: Entity
   let entity5: Entity
-  let component1: Component
-  let component2: Component
-  let component3: Component
-  let component4: Component
-  let component5: Component
+  let component1: Component<any>
+  let component2: Component<any>
+  let component3: Component<any>
+  let component4: Component<any>
+  let component5: Component<any>
   let query: Query
 
   beforeAll(() => {
