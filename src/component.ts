@@ -25,19 +25,25 @@ export default class Component<T extends ComponentSchema> implements Serializabl
   }
 
   public setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean {
-    if (EID >= this.size) return false
-    return this.properties.get(prop)?.set(EID, value) ? true : false
+    const property = this.properties.get(prop)
+    if (!property) return false
+    if (property.size >= this.size) return false
+    property.set(EID, value)
+    return true
   }
 
   public attachEntity(entity: Entity): boolean {
-    if (this.entities.length(true) >= this.size) {
-      return false
-    }
+    if (this.entities.length(true) >= this.size) return false
     return this.entities.addData(entity)
   }
 
   public detachEntity(entity: Entity): boolean {
     return this.entities.removeData(entity)
+  }
+
+  public destroy(): void {
+    this.entities.destroy()
+    this.properties.forEach(property => property.clear())
   }
 
   private createProperties(schema: T): ComponentProps<T> {
