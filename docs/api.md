@@ -5,7 +5,7 @@
 
   ### generics
 
-  - **MEMBER: TYPE**
+  - **TYPE**
 
     DESCRIPTION
 
@@ -40,7 +40,7 @@
     DESCRIPTION
 -->
 
-# Furry ECS documentation
+# Furry ECS API
 
 here are the type definition and description for all the members of Furry ECS library
 

@@ -97,4 +97,6 @@ ECS.update(world, delta, time, ...args)
 
 ## Documentation
 
-Check out the [Documentation](DOCS.md) for more details of each member
+- Check out the [API reference](docs/api.md) for more details of each member
+
+- See also a detailed [tutorial](docs/tutorial.md) for each feature
