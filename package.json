@@ -1,6 +1,6 @@
 {
   "name": "furry-ecs",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Furry ECS is a TypeScript Entity-component-system library",
   "keywords": ["ecs", "typescript", "npm"],
   "author": "JhonDesignee <jhondesignee@gmail.com>",

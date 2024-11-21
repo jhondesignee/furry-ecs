@@ -50,4 +50,9 @@ describe("Component class test", () => {
     expect(component.attachEntity(new Entity())).toBeTruthy()
     expect(component.attachEntity(new Entity())).toBeFalsy()
   })
+  test("Data should be destroyed", () => {
+    component.destroy()
+    expect(component.props.get("foo")?.size).toBe(0)
+    expect(component.props.get("bar")?.size).toBe(0)
+  })
 })

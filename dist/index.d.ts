@@ -61,6 +61,7 @@ declare class Component<T extends ComponentSchema> implements SerializableClass<
     setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean;
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
+    destroy(): void;
     private createProperties;
 }
 
