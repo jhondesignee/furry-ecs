@@ -24,7 +24,7 @@
     "prep": "yarn tc && yarn coverage --watch false && yarn build"
   },
   "engines": {
-    "node": ">=14.8.x"
+    "node": ">=15"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
