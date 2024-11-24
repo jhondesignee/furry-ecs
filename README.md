@@ -50,7 +50,7 @@ Furry ECS is a TypeScript Entity-component-system library
 - Browser
 
   ```html
-  <script src="node_modules/furry-ecs/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/furry-ecs@1.3.1/dist/index.min.js"></script>
   <script>
     const { ECS, Constants } = FurryECS
   </script>
