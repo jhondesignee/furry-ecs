@@ -13,17 +13,29 @@ const terserPlugin = terser({
 export default defineConfig([
   {
     input: "index.ts",
-    output: {
-      file: "dist/index.js",
-      format: "esm"
-    },
+    output: [
+      {
+        file: "dist/index.mjs",
+        format: "esm"
+      },
+      {
+        file: "dist/index.cjs",
+        format: "cjs",
+        exports: "named"
+      },
+      {
+        file: "dist/index.min.js",
+        format: "iife",
+        name: "ecs",
+        exports: "named"
+      }
+    ],
     plugins: [cleandir("dist"), typescriptPlugin, terserPlugin]
   },
   {
     input: "index.ts",
     output: {
-      file: "dist/index.d.ts",
-      format: "esm"
+      file: "dist/index.d.ts"
     },
     plugins: [typescriptPlugin, dts()]
   }
