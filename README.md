@@ -33,11 +33,32 @@ Furry ECS is a TypeScript Entity-component-system library
   yarn add https://github.com/jhondesignee/furry-ecs
   ```
 
+## Usage
+
+- ES Module
+
+  ```typescript
+  import ECS, { Constants } from "furry-ecs"
+  ```
+
+- CommonJS
+
+  ```javascript
+  const { ECS, Constants } = require("furry-ecs")
+  ```
+
+- Browser
+
+  ```html
+  <script src="node_modules/furry-ecs/dist/index.min.js"></script>
+  <script>
+    const { ECS, Constants } = ecs
+  </script>
+  ```
+
 ## Example
 
 ```typescript
-import ECS, { Constants } from "furry-ecs"
-
 const world = ECS.createWorld()
 
 const entity1 = ECS.createEntity()
