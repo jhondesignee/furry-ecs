@@ -52,7 +52,7 @@ Furry ECS is a TypeScript Entity-component-system library
   ```html
   <script src="node_modules/furry-ecs/dist/index.min.js"></script>
   <script>
-    const { ECS, Constants } = ecs
+    const { ECS, Constants } = FurryECS
   </script>
   ```
 

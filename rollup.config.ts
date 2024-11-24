@@ -26,7 +26,7 @@ export default defineConfig([
       {
         file: "dist/index.min.js",
         format: "iife",
-        name: "ecs",
+        name: "FurryECS",
         exports: "named"
       }
     ],
