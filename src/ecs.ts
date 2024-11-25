@@ -127,7 +127,7 @@ export default class ECS {
     return changes
   }
 
-  public static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void {
+  public static update(worlds: World | Array<World>, delta: number, time: number, args?: Array<unknown>): void {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
     for (const world of worldArray) {
       world.update(delta, time, args)

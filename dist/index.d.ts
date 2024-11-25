@@ -186,7 +186,7 @@ declare class ECS {
     static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
     static attachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
     static detachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
-    static update(worlds: World | Array<World>, delta: number, time: number, ...args: Array<unknown>): void;
+    static update(worlds: World | Array<World>, delta: number, time: number, args?: Array<unknown>): void;
     static destroyWorld(worlds: World | Array<World>): void;
 }
 

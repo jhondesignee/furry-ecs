@@ -113,7 +113,7 @@ ECS.addSystem(world, [system1, system2])
 const args = [0]
 const delta = 0
 const time = performance.now()
-ECS.update(world, delta, time, ...args)
+ECS.update(world, delta, time, args)
 ```
 
 ## Documentation

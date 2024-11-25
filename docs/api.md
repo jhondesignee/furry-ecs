@@ -601,7 +601,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Detaches entities from components
 
-  - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number, ...args: Array\<unknown\>): void**
+  - **_public static_ update(worlds: World | Array\<World\>, delta: number, time: number, args?: Array\<unknown\>): void**
 
     Updates the world
 
