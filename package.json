@@ -7,14 +7,22 @@
   "homepage": "https://github.com/jhondesignee/furry-ecs#readme",
   "repository": "github:jhondesignee/furry-ecs",
   "license": "MIT",
-  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "types": "./dist/index.d.ts",
+  "type": "module",
   "files": ["dist"],
   "scripts": {
     "build": "rollup --config rollup.config.ts --configPlugin typescript",
