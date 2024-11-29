@@ -1,5 +1,5 @@
 import Storage from "#storage"
-import { DEFAULT_WORLD_SIZE, Status } from "#constants"
+import { DEFAULT_WORLD_SIZE } from "#constants"
 import type Entity from "#entity"
 import type Component from "#component"
 import type System from "#system"
@@ -62,8 +62,8 @@ export default class World implements SerializableClass<World | Storage<any>> {
 
   public update(delta: number, time: number, args?: Array<unknown>): void {
     this.applyChanges()
-    for (const [system, status] of this.systems) {
-      if (status === Status.ACTIVE) system.update?.(this, delta, time, args)
+    for (const system of this.systems.keys()) {
+      system.update?.(this, delta, time, args)
     }
   }
 
