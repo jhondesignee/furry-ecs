@@ -28,8 +28,8 @@
     "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "test": "vitest --config vitest.config.ts",
     "coverage": "vitest --coverage --config vitest.config.ts",
-    "tc": "tsc --noEmit",
-    "prep": "yarn tc && yarn coverage --watch false && yarn build"
+    "tc": "tsc --noEmit --watch",
+    "prep": "yarn coverage --watch false && yarn build"
   },
   "engines": {
     "node": ">=15"
