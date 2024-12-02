@@ -169,6 +169,8 @@ declare class Query {
     private cleanChanges;
     private filterEntitiesByComponent;
     private filterEntitiesByStatus;
+    private hasAllComponents;
+    private hasAnyComponents;
 }
 
 declare class ECS {
