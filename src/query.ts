@@ -49,18 +49,12 @@ export default class Query {
 
   private filterEntitiesByComponent(world: World): Map<Entity, Status> {
     const filteredEntities = new Map<Entity, Status>()
-    for (const includedComponent of this.includeComponents) {
-      if (world.components.hasData(includedComponent)) {
-        for (const [entity, status] of includedComponent.entities) {
-          filteredEntities.set(entity, status)
-        }
+    for (const [entity, status] of world.entities) {
+      if (this.hasAllComponents(entity, this.includeComponents)) {
+        filteredEntities.set(entity, status)
       }
-    }
-    for (const excludedComponent of this.excludeComponents) {
-      if (world.components.hasData(excludedComponent)) {
-        for (const entity of excludedComponent.entities.keys()) {
-          filteredEntities.delete(entity)
-        }
+      if (this.hasAnyComponents(entity, this.excludeComponents)) {
+        filteredEntities.delete(entity)
       }
     }
     return filteredEntities
@@ -74,5 +68,19 @@ export default class Query {
       }
     }
     return filteredEntities
+  }
+
+  private hasAllComponents(entity: Entity, components: Set<Component<any>>): boolean {
+    for (const component of components) {
+      if (!component.entities.hasData(entity)) return false
+    }
+    return true
+  }
+
+  private hasAnyComponents(entity: Entity, components: Set<Component<any>>): boolean {
+    for (const component of components) {
+      if (component.entities.hasData(entity)) return true
+    }
+    return false
   }
 }

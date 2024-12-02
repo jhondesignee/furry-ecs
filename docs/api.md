@@ -785,6 +785,14 @@ here are the type definition and description for all the members of Furry ECS li
 
     Filters the already filtered entities based on their status
 
+  - **_private_ hasAllComponents(entity: Entity, components: Set\<Component\<any\>\>): boolean**
+
+    Check if entity exists in all of the components
+
+  - **_private_ hasAnyComponents(entity: Entity, components: Set\<Component\<any\>\>): boolean**
+
+    Check if entity exists in any of the components
+
 - ## **`Storage: class`** <a name="storage"></a>
 
   Storage system for any iterable data

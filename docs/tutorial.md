@@ -207,7 +207,7 @@ Here is the overview of the features of Furry ECS
   const query2 = ECS.defineQuery()
   ```
 
-  The query will filter all the entities in included components that are not in the excluded component
+  The query will filter all the entities from the world that have ALL the included components and do not have ANY of the excluded component
 
   `A - B`
 
@@ -232,19 +232,19 @@ Here is the overview of the features of Furry ECS
   query.exec(world) // [entity1, entity2]
   ```
 
-  Entities can also be filtered by their status inside the component
+  Entities can also be filtered by their status inside the world
 
   ```typescript
   import { Constants } from "furry-ecs"
 
-  component.attachEntity(entity1)
+  world.addEntity(entity1)
   world.update(0, 0) // entity1 has the status ADDED
-  component.attachEntity(entity2)
+  world.addEntity(entity2)
   world.update(0, 0) // entity1 has the status ACTIVE and entity2 has the status ADDED
 
   query.exec(world, Constants.Status.ADDED) // [entity2]
 
-  component.detachEntity(entity2)
+  world.removeEntity(entity2)
   world.update(0, 0) // entity2 has the status REMOVED
 
   query.exec(world, Constants.Status.ADDED) // []
