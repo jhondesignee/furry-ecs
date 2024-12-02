@@ -15,8 +15,6 @@ describe("Query class test", () => {
   let component1: Component<any>
   let component2: Component<any>
   let component3: Component<any>
-  let component4: Component<any>
-  let component5: Component<any>
   let query: Query
 
   beforeAll(() => {
@@ -29,17 +27,14 @@ describe("Query class test", () => {
     component1 = new Component({})
     component2 = new Component({})
     component3 = new Component({})
-    component4 = new Component({})
-    component5 = new Component({})
     query = new Query({
-      include: [component1, component4],
-      exclude: [component2, component5]
+      include: [component1],
+      exclude: [component2]
     })
     world.addEntity(entity1)
     world.addEntity(entity2)
     world.addEntity(entity3)
     world.addEntity(entity4)
-    world.addEntity(entity5)
     world.addComponent(component1)
     world.addComponent(component2)
     world.addComponent(component3)
@@ -56,14 +51,16 @@ describe("Query class test", () => {
     expect(query.exec(world).length).toBe(2)
   })
   test("Should filter the recently added entities", () => {
+    world.addEntity(entity5)
     component1.attachEntity(entity5)
-    expect(query.exec(world, Status.ADDED).length).toBe(1)
+    expect(query.exec(world, Status.ADDED).length).toBe(0)
     world.update(0, 0)
     expect(query.exec(world, Status.ADDED).length).toBe(1)
     world.update(0, 0)
     expect(query.exec(world, Status.ADDED).length).toBe(0)
   })
   test("Should filter the recently removed entities", () => {
+    world.removeEntity(entity1)
     component1.detachEntity(entity1)
     expect(query.exec(world, Status.REMOVED).length).toBe(0)
     world.update(0, 0)
