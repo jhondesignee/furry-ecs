@@ -1,7 +1,7 @@
 import type Component from "#component"
 import type World from "#world"
 import type Serializer from "#serializer"
-import type { ComponentType, Serializable } from "#constants"
+import type { ComponentType, Serializable, QueryOperation } from "#constants"
 
 export type SystemStartFunction = (world: World) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
@@ -10,9 +10,10 @@ export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]>
   ? number
   : T extends ComponentType.ARRAY
   ? Array<number>
-  : null
+  : never
 export type ComponentSchema = Record<string, ComponentType>
-export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>
+export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]> | null>>
+export type ComponentPropsObject<T extends ComponentSchema> = { [K in keyof T]: ComponentPropValue<T[K]> | null }
 
 export interface SystemConfig {
   start?: SystemStartFunction
@@ -23,6 +24,8 @@ export interface SystemConfig {
 export interface QueryConfig {
   include: Array<Component<any>>
   exclude?: Array<Component<any>>
+  includeOperation?: QueryOperation
+  excludeOperation?: QueryOperation
 }
 
 export interface WorldConfig {
