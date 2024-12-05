@@ -52,6 +52,7 @@ here are the type definition and description for all the members of Furry ECS li
 - [ComponentPropValue](#component-prop-value)
 - [ComponentSchema](#component-schema)
 - [ComponentProps](#component-props)
+- [ComponentPropsObject](#component-props-object)
 - [SystemConfig](#system-config)
 - [QueryConfig](#query-config)
 - [WorldConfig](#world-config)
@@ -71,6 +72,7 @@ here are the type definition and description for all the members of Furry ECS li
 - [ComponentType](#component-type)
 - [Status](#status)
 - [Serializable](#serializable)
+- [QueryOperation](#query-operation)
 - [Constants](#constants)
 - [ECS](#ecs)
 - [Entity](#entity)
@@ -175,9 +177,25 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### returns
 
-  - **Map\<_keyof_ T, Map\<number, ComponentPropValue\<T[_keyof_ T]\>\>\>**
+  - **Map\<_keyof_ T, Map\<number, ComponentPropValue\<T[_keyof_ T]\> | null\>\>**
 
     the component properties
+
+- ## **`ComponentPropsObject: type`** <a name="component-props-object"></a>
+
+  Represents the properties as an object
+
+  ### generics
+
+  - **T _extends_ ComponentSchema>**
+
+    The properties schema
+
+  ### returns
+
+  - **{ [K _in keyof_ T]: ComponentPropValue\<T[K]\> | null }**
+
+    The properties object
 
 - ## **`SystemConfig: interface`** <a name="system-config"></a>
 
@@ -210,6 +228,14 @@ here are the type definition and description for all the members of Furry ECS li
   - **exclude?: Array\<Component\<any\>\>**
 
     Defines all the components to be excluded from the entity query result
+
+  - **includeOperation?: QueryOperation**
+
+    The operation used for include logic
+
+  - **excludeOperation?: QueryOperation**
+
+    The operation used for exclude logic
 
 - ## **`WorldConfig: interface`** <a name="world-config"></a>
 
@@ -513,6 +539,20 @@ here are the type definition and description for all the members of Furry ECS li
 
     Represents a plain object or a class
 
+- ## **`QueryOperation: enum`** <a name="query-operation"></a>
+
+  Enum of query filtering operations
+
+  ### properties
+
+  - **ALL: 0**
+
+    Represents the operation that checks for the existence of all of the components
+
+  - **ANY: 1**
+
+    Represents the operation that checks for the existence of any of the components
+
 - ## **`Constants: const`** <a name="constants"></a>
 
   Set of constant values
@@ -542,6 +582,12 @@ here are the type definition and description for all the members of Furry ECS li
 - ## **`ECS: class`** <a name="ecs"></a>
 
   Utility class to facilitate multiple members management
+
+  ### properties
+
+  - **_public static readonly_ Constants: _typeof_ Constants**
+
+    All the exported constants
 
   ### methods
 
@@ -699,6 +745,14 @@ here are the type definition and description for all the members of Furry ECS li
 
     Sets the property value for the entity
 
+  - **_public_ getProps(EID: number): ComponentPropsObject\<T\> | undefined**
+
+    Gets all the properties of the entity
+
+  - **_public_ setProps(EID: number, props: Partial\<ComponentPropsObject\<T\>\>): boolean**
+
+    Sets all the properties of the entity
+
   - **_public_ attachEntity(entity: Entity): boolean**
 
     Adds an entity to the component
@@ -749,9 +803,21 @@ here are the type definition and description for all the members of Furry ECS li
 
     Stores all the components that will exclude entities
 
-  - **_private entities_: Map\<Entity, Status\>**
+  - **private readonly includeOperation: QueryOperation**
 
-    Stores the filtered entities and its corresponding status
+    The operation used for include logic
+
+  - **private readonly excludeOperation: QueryOperation**
+
+    The operation used for exclude logic
+
+  - **private readonly operationTable: {<br>&nbsp;[QueryOperation.ALL]: Query["hasAllComponents"]<br>&nbsp;[QueryOperation.ANY]: Query["hasAnyComponents"]<br>}**
+
+    The map of the operations and its methods
+
+  - **_private entities_: Set\<Entity\>**
+
+    Stores the filtered entities
 
   - **_private_ updated: boolean**
 
@@ -765,25 +831,21 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### methods
 
-  - **_public_ exec(world: World, status?: Status): Array\<Entity\>**
+  - **_public_ exec(world: World, status?: Status, component: Component\<any\>): Array\<Entity\>**
 
-    Filters the entities that satisfies the included and excluded components. The status can be used for further filtering
+    Filters the entities that satisfies the included and excluded components. The status and/or a component can be used for further filtering
 
-  - **_private_ hasChanged(): boolean**
+  - **_private_ hasChanged(world: World): boolean**
 
-    Checks if some of the components has changes
+    Checks if some of the components or the world has changed
 
-  - **_private_ cleanChanges(): boolean**
-
-    Cleans the previous changes by changing the status of the components
-
-  - **_private_ filterEntitiesByComponent(world: World): Map\<Entity, Status\>**
+  - **_private_ filterEntitiesByComponent(world: World): Set\<Entity\>**
 
     Filters the entities based on the included and excluded components
 
-  - **_private_ filterEntitiesByModifier(status: Status): Array\<Entity\>**
+  - **_private_ filterEntitiesByStatus(world: World, status: Status, component?: Component\<any\>): Array\<Entity\>**
 
-    Filters the already filtered entities based on their status
+    Filters the already filtered entities based on their status inside the world. If a component is provided it uses the status inside the component
 
   - **_private_ hasAllComponents(entity: Entity, components: Set\<Component\<any\>\>): boolean**
 
