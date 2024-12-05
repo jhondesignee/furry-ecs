@@ -9,6 +9,7 @@ export { default as Storage } from "#storage"
 export { default as Serializer } from "#serializer"
 export { default as World } from "#world"
 
+export type * as Types from "#types"
 export type {
   SystemStartFunction,
   SystemUpdateFunction,

@@ -5,8 +5,11 @@ import Query from "#query"
 import Serializer from "#serializer"
 import World from "#world"
 import type { ComponentSchema, SystemConfig, QueryConfig, SerializerConfig, SerializedValueType } from "#types"
+import * as Constants from "#constants"
 
 export default class ECS {
+  public static readonly Constants = Constants
+
   public static createWorld(): World {
     return new World()
   }
