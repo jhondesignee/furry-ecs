@@ -1,4 +1,4 @@
-import { Status } from "#constants"
+import { Status, QueryOperation } from "#constants"
 import type Entity from "#entity"
 import type Component from "#component"
 import type World from "#world"
@@ -7,63 +7,64 @@ import type { QueryConfig } from "#types"
 export default class Query {
   private readonly includeComponents: Set<Component<any>>
   private readonly excludeComponents: Set<Component<any>>
-  private entities: Map<Entity, Status>
+  private entities: Set<Entity>
   private updated: boolean
+  private readonly includeOperation: QueryOperation
+  private readonly excludeOperation: QueryOperation
+  private readonly operationTable: {
+    [QueryOperation.ALL]: Query["hasAllComponents"]
+    [QueryOperation.ANY]: Query["hasAnyComponents"]
+  }
 
   constructor(config?: QueryConfig) {
     this.includeComponents = new Set(config?.include || [])
     this.excludeComponents = new Set(config?.exclude || [])
-    this.entities = new Map()
+    this.entities = new Set()
     this.updated = false
+    this.includeOperation = config?.includeOperation || QueryOperation.ALL
+    this.excludeOperation = config?.excludeOperation || QueryOperation.ANY
+    this.operationTable = {
+      [QueryOperation.ANY]: this.hasAnyComponents,
+      [QueryOperation.ALL]: this.hasAllComponents
+    }
   }
 
-  public exec(world: World, status?: Status): Array<Entity> {
-    this.updated = this.entities.size === 0 ? false : !this.hasChanges()
+  public exec(world: World, status?: Status, component?: Component<any>): Array<Entity> {
+    this.updated = !this.hasChanged(world)
     if (!this.updated) {
       this.entities = this.filterEntitiesByComponent(world)
-    } else {
-      this.cleanChanges()
     }
     if (status !== undefined) {
-      return this.filterEntitiesByStatus(status)
+      return this.filterEntitiesByStatus(world, status, component)
     }
     return new Array(...this.entities.keys())
   }
 
-  private hasChanges(): boolean {
+  private hasChanged(world: World): boolean {
+    if (world.entities.hasChanged) return true
     for (const component of [...this.includeComponents.keys(), ...this.excludeComponents.keys()]) {
       if (component.entities.hasChanged) return true
     }
     return false
   }
 
-  private cleanChanges(): void {
-    for (const [entity, status] of this.entities) {
-      if (status === Status.ADDED) {
-        this.entities.set(entity, Status.ACTIVE)
-      } else if (status === Status.REMOVED) {
-        this.entities.delete(entity)
+  private filterEntitiesByComponent(world: World): Set<Entity> {
+    const filteredEntities = new Set<Entity>()
+    for (const entity of world.entities.keys()) {
+      if (this.operationTable[this.includeOperation](entity, this.includeComponents)) {
+        filteredEntities.add(entity)
       }
-    }
-  }
-
-  private filterEntitiesByComponent(world: World): Map<Entity, Status> {
-    const filteredEntities = new Map<Entity, Status>()
-    for (const [entity, status] of world.entities) {
-      if (this.hasAllComponents(entity, this.includeComponents)) {
-        filteredEntities.set(entity, status)
-      }
-      if (this.hasAnyComponents(entity, this.excludeComponents)) {
+      if (this.operationTable[this.excludeOperation](entity, this.excludeComponents)) {
         filteredEntities.delete(entity)
       }
     }
     return filteredEntities
   }
 
-  private filterEntitiesByStatus(status: Status): Array<Entity> {
+  private filterEntitiesByStatus(world: World, status: Status, component?: Component<any>): Array<Entity> {
     const filteredEntities = new Array<Entity>()
-    for (const [entity, entityStatus] of this.entities) {
-      if (entityStatus === status) {
+    for (const entity of this.entities) {
+      if (component?.entities.getDataStatus(entity) === status || world.entities.getDataStatus(entity) === status) {
         filteredEntities.push(entity)
       }
     }

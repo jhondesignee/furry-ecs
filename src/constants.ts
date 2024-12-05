@@ -20,3 +20,8 @@ export enum Serializable {
   SET,
   OBJECT
 }
+
+export enum QueryOperation {
+  ALL,
+  ANY
+}
