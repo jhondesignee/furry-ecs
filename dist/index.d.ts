@@ -17,16 +17,22 @@ declare enum Serializable {
     SET = 5,
     OBJECT = 6
 }
+declare enum QueryOperation {
+    ALL = 0,
+    ANY = 1
+}
 
-type constants_ComponentType = ComponentType;
-declare const constants_ComponentType: typeof ComponentType;
-declare const constants_DEFAULT_WORLD_SIZE: typeof DEFAULT_WORLD_SIZE;
-type constants_Serializable = Serializable;
-declare const constants_Serializable: typeof Serializable;
-type constants_Status = Status;
-declare const constants_Status: typeof Status;
-declare namespace constants {
-  export { constants_ComponentType as ComponentType, constants_DEFAULT_WORLD_SIZE as DEFAULT_WORLD_SIZE, constants_Serializable as Serializable, constants_Status as Status };
+type Constants_ComponentType = ComponentType;
+declare const Constants_ComponentType: typeof ComponentType;
+declare const Constants_DEFAULT_WORLD_SIZE: typeof DEFAULT_WORLD_SIZE;
+type Constants_QueryOperation = QueryOperation;
+declare const Constants_QueryOperation: typeof QueryOperation;
+type Constants_Serializable = Serializable;
+declare const Constants_Serializable: typeof Serializable;
+type Constants_Status = Status;
+declare const Constants_Status: typeof Status;
+declare namespace Constants {
+  export { Constants_ComponentType as ComponentType, Constants_DEFAULT_WORLD_SIZE as DEFAULT_WORLD_SIZE, Constants_QueryOperation as QueryOperation, Constants_Serializable as Serializable, Constants_Status as Status };
 }
 
 declare class Storage<Data> {
@@ -59,6 +65,8 @@ declare class Component<T extends ComponentSchema> implements SerializableClass<
     get props(): ComponentProps<T>;
     getProp<K extends keyof T>(prop: K, EID: number): ComponentPropValue<T[K]> | undefined;
     setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean;
+    getProps(EID: number): ComponentPropsObject<T> | undefined;
+    setProps(EID: number, props: Partial<ComponentPropsObject<T>>): boolean;
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
     destroy(): void;
@@ -110,9 +118,12 @@ declare class Serializer<T, R = SerializedValueType<T>> {
 type SystemStartFunction = (world: World) => void;
 type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void;
 type SystemDestroyFunction = (world: World) => void;
-type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : null;
+type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : never;
 type ComponentSchema = Record<string, ComponentType>;
-type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>;
+type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]> | null>>;
+type ComponentPropsObject<T extends ComponentSchema> = {
+    [K in keyof T]: ComponentPropValue<T[K]> | null;
+};
 interface SystemConfig {
     start?: SystemStartFunction;
     update: SystemUpdateFunction;
@@ -121,6 +132,8 @@ interface SystemConfig {
 interface QueryConfig {
     include: Array<Component<any>>;
     exclude?: Array<Component<any>>;
+    includeOperation?: QueryOperation;
+    excludeOperation?: QueryOperation;
 }
 interface WorldConfig {
     size?: number;
@@ -147,6 +160,32 @@ interface SerializableClass<T> {
     classes: Array<Constructor<T>>;
 }
 
+type types_ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = ComponentPropValue<T>;
+type types_ComponentProps<T extends ComponentSchema> = ComponentProps<T>;
+type types_ComponentPropsObject<T extends ComponentSchema> = ComponentPropsObject<T>;
+type types_ComponentSchema = ComponentSchema;
+type types_Constructor<T> = Constructor<T>;
+type types_CustomDeserializeHandler<T, R> = CustomDeserializeHandler<T, R>;
+type types_CustomSerializeHandler<T, R> = CustomSerializeHandler<T, R>;
+type types_QueryConfig = QueryConfig;
+type types_SerializableClass<T> = SerializableClass<T>;
+type types_SerializedArray<T> = SerializedArray<T>;
+type types_SerializedData<T> = SerializedData<T>;
+type types_SerializedMap<T> = SerializedMap<T>;
+type types_SerializedObject<T> = SerializedObject<T>;
+type types_SerializedPrimitive = SerializedPrimitive;
+type types_SerializedSet<T> = SerializedSet<T>;
+type types_SerializedValueType<T> = SerializedValueType<T>;
+type types_SerializerConfig<T, R> = SerializerConfig<T, R>;
+type types_SystemConfig = SystemConfig;
+type types_SystemDestroyFunction = SystemDestroyFunction;
+type types_SystemStartFunction = SystemStartFunction;
+type types_SystemUpdateFunction = SystemUpdateFunction;
+type types_WorldConfig = WorldConfig;
+declare namespace types {
+  export type { types_ComponentPropValue as ComponentPropValue, types_ComponentProps as ComponentProps, types_ComponentPropsObject as ComponentPropsObject, types_ComponentSchema as ComponentSchema, types_Constructor as Constructor, types_CustomDeserializeHandler as CustomDeserializeHandler, types_CustomSerializeHandler as CustomSerializeHandler, types_QueryConfig as QueryConfig, types_SerializableClass as SerializableClass, types_SerializedArray as SerializedArray, types_SerializedData as SerializedData, types_SerializedMap as SerializedMap, types_SerializedObject as SerializedObject, types_SerializedPrimitive as SerializedPrimitive, types_SerializedSet as SerializedSet, types_SerializedValueType as SerializedValueType, types_SerializerConfig as SerializerConfig, types_SystemConfig as SystemConfig, types_SystemDestroyFunction as SystemDestroyFunction, types_SystemStartFunction as SystemStartFunction, types_SystemUpdateFunction as SystemUpdateFunction, types_WorldConfig as WorldConfig };
+}
+
 declare class Entity implements SerializableClass<Entity> {
     readonly classes: (typeof Entity)[];
     readonly EID: number;
@@ -163,10 +202,12 @@ declare class Query {
     private readonly excludeComponents;
     private entities;
     private updated;
+    private readonly includeOperation;
+    private readonly excludeOperation;
+    private readonly operationTable;
     constructor(config?: QueryConfig);
-    exec(world: World, status?: Status): Array<Entity>;
-    private hasChanges;
-    private cleanChanges;
+    exec(world: World, status?: Status, component?: Component<any>): Array<Entity>;
+    private hasChanged;
     private filterEntitiesByComponent;
     private filterEntitiesByStatus;
     private hasAllComponents;
@@ -174,6 +215,7 @@ declare class Query {
 }
 
 declare class ECS {
+    static readonly Constants: typeof Constants;
     static createWorld(): World;
     static createEntity(): Entity;
     static defineComponent<Schema extends ComponentSchema>(schema?: Schema, size?: number): Component<Schema>;
@@ -192,4 +234,4 @@ declare class ECS {
     static destroyWorld(worlds: World | Array<World>): void;
 }
 
-export { Component, type ComponentProps, type ComponentSchema, constants as Constants, type Constructor, type CustomDeserializeHandler, type CustomSerializeHandler, ECS, Entity, Query, type QueryConfig, type SerializableClass, type SerializedArray, type SerializedData, type SerializedMap, type SerializedObject, type SerializedPrimitive, type SerializedSet, type SerializedValueType, Serializer, type SerializerConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, World, type WorldConfig, ECS as default };
+export { Component, type ComponentProps, type ComponentSchema, Constants, type Constructor, type CustomDeserializeHandler, type CustomSerializeHandler, ECS, Entity, Query, type QueryConfig, type SerializableClass, type SerializedArray, type SerializedData, type SerializedMap, type SerializedObject, type SerializedPrimitive, type SerializedSet, type SerializedValueType, Serializer, type SerializerConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, types as Types, World, type WorldConfig, ECS as default };
