@@ -54,7 +54,6 @@ export default class Storage<Data> {
   }
 
   public commitChanges(immediately: boolean = false): void {
-    if (this.hasChanged) this.hasChanged = false
     if (immediately) this.applyDeferredChanges()
     this.cleanPreviousChanges()
     if (!immediately) this.applyDeferredChanges()
@@ -63,6 +62,7 @@ export default class Storage<Data> {
   public destroy(): void {
     this.data.clear()
     this.cleanDeferredChanges()
+    this.hasChanged = false
   }
 
   public getDataStatus(data: Data): Status | undefined {
@@ -101,13 +101,17 @@ export default class Storage<Data> {
   }
 
   private cleanPreviousChanges(): void {
+    let hasChanged = false
     for (const [data, status] of this.data) {
       if (status === Status.ADDED) {
         this.data.set(data, Status.ACTIVE)
+        hasChanged = true
       } else if (status === Status.REMOVED) {
         this.data.delete(data)
+        hasChanged = true
       }
     }
+    this.hasChanged = hasChanged
   }
 
   private cleanDeferredChanges(): void {
