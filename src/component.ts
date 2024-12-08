@@ -32,10 +32,12 @@ export default class Component<T extends ComponentSchema> implements Serializabl
     return true
   }
 
-  public getProps(EID: number): ComponentPropsObject<T> | undefined {
-    const result = {} as ComponentPropsObject<T>
+  public getProps(EID: number): Partial<ComponentPropsObject<T>> {
+    const result = {} as Partial<ComponentPropsObject<T>>
     for (const [prop, value] of this.properties) {
-      result[prop] = value?.get(EID) || null
+      const entityValue = value?.get(EID)
+      if (entityValue === undefined) continue
+      result[prop] = entityValue
     }
     return result
   }

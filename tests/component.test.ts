@@ -50,8 +50,7 @@ describe("Component class test", () => {
     expect(component.getProp("unknown", 0)).toBeUndefined()
     expect(component.getProps(1)).toStrictEqual({
       foo: 1,
-      bar: [1, 2, 3],
-      baz: null
+      bar: [1, 2, 3]
     })
   })
   test("Set property out of range should return false", () => {
