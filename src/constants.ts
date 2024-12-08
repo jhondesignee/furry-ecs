@@ -23,5 +23,6 @@ export enum Serializable {
 
 export enum QueryOperation {
   ALL,
-  ANY
+  ANY,
+  EXACT
 }

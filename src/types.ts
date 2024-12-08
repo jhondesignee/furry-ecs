@@ -10,10 +10,10 @@ export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]>
   ? number
   : T extends ComponentType.ARRAY
   ? Array<number>
-  : never
+  : null
 export type ComponentSchema = Record<string, ComponentType>
-export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]> | null>>
-export type ComponentPropsObject<T extends ComponentSchema> = { [K in keyof T]: ComponentPropValue<T[K]> | null }
+export type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>
+export type ComponentPropsObject<T extends ComponentSchema> = { [K in keyof T]: ComponentPropValue<T[K]> }
 
 export interface SystemConfig {
   start?: SystemStartFunction
