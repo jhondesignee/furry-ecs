@@ -177,7 +177,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### returns
 
-  - **Map\<_keyof_ T, Map\<number, ComponentPropValue\<T[_keyof_ T]\> | null\>\>**
+  - **Map\<_keyof_ T, Map\<number, ComponentPropValue\<T[_keyof_ T]\>\>\>**
 
     the component properties
 
@@ -193,7 +193,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   ### returns
 
-  - **{ [K _in keyof_ T]: ComponentPropValue\<T[K]\> | null }**
+  - **{ [K _in keyof_ T]: ComponentPropValue\<T[K]\> }**
 
     The properties object
 
@@ -553,6 +553,10 @@ here are the type definition and description for all the members of Furry ECS li
 
     Represents the operation that checks for the existence of any of the components
 
+  - **EXACT: 2**
+
+    Represents the operation that checks for the existence of exactly the components
+
 - ## **`Constants: const`** <a name="constants"></a>
 
   Set of constant values
@@ -745,7 +749,7 @@ here are the type definition and description for all the members of Furry ECS li
 
     Sets the property value for the entity
 
-  - **_public_ getProps(EID: number): ComponentPropsObject\<T\> | undefined**
+  - **_public_ getProps(EID: number): Partial\<ComponentPropsObject\<T\>\>**
 
     Gets all the properties of the entity
 
@@ -811,17 +815,17 @@ here are the type definition and description for all the members of Furry ECS li
 
     The operation used for exclude logic
 
-  - **private readonly operationTable: {<br>&nbsp;[QueryOperation.ALL]: Query["hasAllComponents"]<br>&nbsp;[QueryOperation.ANY]: Query["hasAnyComponents"]<br>}**
+  - **private readonly operationTable: {<br>&nbsp;[QueryOperation.ALL]: Query["hasAllComponents"]<br>&nbsp;[QueryOperation.ANY]: Query["hasAnyComponents"]<br>&nbsp;[QueryOperation.EXACT]: Query["hasExactComponents"]<br>}**
 
     The map of the operations and its methods
 
-  - **_private entities_: Set\<Entity\>**
+  - **_private_ entities: Set\<Entity\>**
 
     Stores the filtered entities
 
-  - **_private_ updated: boolean**
+  - **_private_ world!: World**
 
-    Flag that indicates if the entities map is up-to-dated
+    The current world the query is using
 
   ### arguments
 
@@ -835,15 +839,11 @@ here are the type definition and description for all the members of Furry ECS li
 
     Filters the entities that satisfies the included and excluded components. The status and/or a component can be used for further filtering
 
-  - **_private_ hasChanged(world: World): boolean**
-
-    Checks if some of the components or the world has changed
-
-  - **_private_ filterEntitiesByComponent(world: World): Set\<Entity\>**
+  - **_private_ filterEntitiesByComponent(): Set\<Entity\>**
 
     Filters the entities based on the included and excluded components
 
-  - **_private_ filterEntitiesByStatus(world: World, status: Status, component?: Component\<any\>): Array\<Entity\>**
+  - **_private_ filterEntitiesByStatus(status: Status, component?: Component\<any\>): Array\<Entity\>**
 
     Filters the already filtered entities based on their status inside the world. If a component is provided it uses the status inside the component
 
@@ -854,6 +854,10 @@ here are the type definition and description for all the members of Furry ECS li
   - **_private_ hasAnyComponents(entity: Entity, components: Set\<Component\<any\>\>): boolean**
 
     Check if entity exists in any of the components
+
+  - **_private_ hasExactComponents(entity: Entity, components: Set\<Component\<any\>\>): boolean**
+
+    Check if entity exists in exactly all of the components
 
 - ## **`Storage: class`** <a name="storage"></a>
 
