@@ -19,7 +19,8 @@ declare enum Serializable {
 }
 declare enum QueryOperation {
     ALL = 0,
-    ANY = 1
+    ANY = 1,
+    EXACT = 2
 }
 
 type Constants_ComponentType = ComponentType;
@@ -65,7 +66,7 @@ declare class Component<T extends ComponentSchema> implements SerializableClass<
     get props(): ComponentProps<T>;
     getProp<K extends keyof T>(prop: K, EID: number): ComponentPropValue<T[K]> | undefined;
     setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean;
-    getProps(EID: number): ComponentPropsObject<T> | undefined;
+    getProps(EID: number): Partial<ComponentPropsObject<T>>;
     setProps(EID: number, props: Partial<ComponentPropsObject<T>>): boolean;
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
@@ -118,11 +119,11 @@ declare class Serializer<T, R = SerializedValueType<T>> {
 type SystemStartFunction = (world: World) => void;
 type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void;
 type SystemDestroyFunction = (world: World) => void;
-type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : never;
+type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : null;
 type ComponentSchema = Record<string, ComponentType>;
-type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]> | null>>;
+type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>;
 type ComponentPropsObject<T extends ComponentSchema> = {
-    [K in keyof T]: ComponentPropValue<T[K]> | null;
+    [K in keyof T]: ComponentPropValue<T[K]>;
 };
 interface SystemConfig {
     start?: SystemStartFunction;
@@ -200,18 +201,18 @@ declare class Entity implements SerializableClass<Entity> {
 declare class Query {
     private readonly includeComponents;
     private readonly excludeComponents;
-    private entities;
-    private updated;
     private readonly includeOperation;
     private readonly excludeOperation;
     private readonly operationTable;
+    private entities;
+    private world;
     constructor(config?: QueryConfig);
     exec(world: World, status?: Status, component?: Component<any>): Array<Entity>;
-    private hasChanged;
     private filterEntitiesByComponent;
     private filterEntitiesByStatus;
     private hasAllComponents;
     private hasAnyComponents;
+    private hasExactComponents;
 }
 
 declare class ECS {
