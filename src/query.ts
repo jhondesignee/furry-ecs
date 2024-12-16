@@ -32,25 +32,13 @@ export default class Query {
 
   public exec(world: World, status?: Status, component?: Component<any>): Array<Entity> {
     this.world = world
-    /* if (!this.entities.size || this.hasChanged()) {
-    } */
-    // call this method every time this is inefficient
+    // call this method every time is inefficient
     this.entities = this.filterEntitiesByComponent()
     if (status !== undefined) {
       return this.filterEntitiesByStatus(status, component)
     }
     return new Array(...this.entities.keys())
   }
-
-  // TODO: add a better data synchronization
-  /* private hasChanged(): boolean {
-    for (const component of [...this.includeComponents.keys(), ...this.excludeComponents.keys()]) {
-      if (component.entities.hasChanged) return true
-    }
-    if (this.world.entities.hasChanged) return true
-    if (this.world.components.hasChanged) return true
-    return false
-  } */
 
   private filterEntitiesByComponent(): Set<Entity> {
     const filteredEntities = new Set<Entity>()

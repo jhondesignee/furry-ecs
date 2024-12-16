@@ -27,8 +27,15 @@ export default class Component<T extends ComponentSchema> implements Serializabl
   public setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean {
     const property = this.properties.get(prop)
     if (!property) return false
-    if (property.size >= this.size && !this.properties.get(prop)?.has(EID)) return false
+    if (property.size >= this.size && !property.has(EID)) return false
     property.set(EID, value)
+    return true
+  }
+
+  public deleteProp<K extends keyof T>(prop: K, EID: number): boolean {
+    const property = this.properties.get(prop)
+    if (!property || !property.has(EID)) return false
+    property.delete(EID)
     return true
   }
 
@@ -43,12 +50,22 @@ export default class Component<T extends ComponentSchema> implements Serializabl
   }
 
   public setProps(EID: number, props: Partial<ComponentPropsObject<T>>): boolean {
+    let success = true
     for (const [prop, value] of Object.entries(props)) {
       if (value === undefined || value === null) continue
       const result = this.setProp(prop, EID, value)
-      if (!result) return false
+      if (!result) success = false
     }
-    return true
+    return success
+  }
+
+  public deleteProps(EID: number): boolean {
+    let success = true
+    for (const prop of this.properties.keys()) {
+      const result = this.deleteProp(prop, EID)
+      if (!result) success = false
+    }
+    return success
   }
 
   public attachEntity(entity: Entity): boolean {

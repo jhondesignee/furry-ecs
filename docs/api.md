@@ -739,7 +739,7 @@ here are the type definition and description for all the members of Furry ECS li
 
   - **_public get_ props(): ComponentProps\<T\>**
 
-    Returns all the properties
+    Returns all the properties as a Map
 
   - **_public_ getProp\<K _extends keyof_ T\>(prop: K, EID: number): ComponentPropValue\<T[K]\> | undefined**
 
@@ -749,6 +749,10 @@ here are the type definition and description for all the members of Furry ECS li
 
     Sets the property value for the entity
 
+  - **_public_ deleteProp\<K _extends keyof_ T\>(prop: K, EID: number): boolean**
+
+    Deletes the property value of the entity
+
   - **_public_ getProps(EID: number): Partial\<ComponentPropsObject\<T\>\>**
 
     Gets all the properties of the entity
@@ -756,6 +760,10 @@ here are the type definition and description for all the members of Furry ECS li
   - **_public_ setProps(EID: number, props: Partial\<ComponentPropsObject\<T\>\>): boolean**
 
     Sets all the properties of the entity
+
+  - **public deleteProps(EID: number): boolean**
+
+    Deletes all the properties of the entity
 
   - **_public_ attachEntity(entity: Entity): boolean**
 

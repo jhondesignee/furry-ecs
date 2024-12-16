@@ -66,8 +66,10 @@ declare class Component<T extends ComponentSchema> implements SerializableClass<
     get props(): ComponentProps<T>;
     getProp<K extends keyof T>(prop: K, EID: number): ComponentPropValue<T[K]> | undefined;
     setProp<K extends keyof T, V extends ComponentPropValue<T[K]>>(prop: K, EID: number, value: V): boolean;
+    deleteProp<K extends keyof T>(prop: K, EID: number): boolean;
     getProps(EID: number): Partial<ComponentPropsObject<T>>;
     setProps(EID: number, props: Partial<ComponentPropsObject<T>>): boolean;
+    deleteProps(EID: number): boolean;
     attachEntity(entity: Entity): boolean;
     detachEntity(entity: Entity): boolean;
     destroy(): void;
@@ -235,4 +237,4 @@ declare class ECS {
     static destroyWorld(worlds: World | Array<World>): void;
 }
 
-export { Component, type ComponentProps, type ComponentSchema, Constants, type Constructor, type CustomDeserializeHandler, type CustomSerializeHandler, ECS, Entity, Query, type QueryConfig, type SerializableClass, type SerializedArray, type SerializedData, type SerializedMap, type SerializedObject, type SerializedPrimitive, type SerializedSet, type SerializedValueType, Serializer, type SerializerConfig, Storage, System, type SystemConfig, type SystemDestroyFunction, type SystemStartFunction, type SystemUpdateFunction, types as Types, World, type WorldConfig, ECS as default };
+export { Component, Constants, ECS, Entity, Query, Serializer, Storage, System, types as Types, World, ECS as default };

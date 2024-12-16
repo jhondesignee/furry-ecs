@@ -69,6 +69,8 @@ Here is the overview of the features of Furry ECS
 
   Properties can be accessed using the `getProp`, `getProps`, `setProp`, and `setProps` methods
 
+  The entity properties can be deleted using the `deleteProp`, and `deleteProps` methods
+
   ```typescript
   let value = 2
 
@@ -86,6 +88,9 @@ Here is the overview of the features of Furry ECS
   }) // set all properties at once
 
   component3.props // all properties as a Map
+
+  component3.deleteProp("foo", entity1.EID) // resets the property value of the entity
+  component3.deleteProps(entity1.EID) // resets all the property values of the entity
   ```
 
   Entities can be associated with the component using the `attachEntity` and `detachEntity` methods
