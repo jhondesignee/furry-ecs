@@ -10,25 +10,3 @@ export { default as Serializer } from "#serializer"
 export { default as World } from "#world"
 
 export type * as Types from "#types"
-export type {
-  SystemStartFunction,
-  SystemUpdateFunction,
-  SystemDestroyFunction,
-  ComponentSchema,
-  ComponentProps,
-  SystemConfig,
-  QueryConfig,
-  WorldConfig,
-  Constructor,
-  CustomSerializeHandler,
-  CustomDeserializeHandler,
-  SerializedArray,
-  SerializedMap,
-  SerializedSet,
-  SerializedObject,
-  SerializedPrimitive,
-  SerializedValueType,
-  SerializedData,
-  SerializableClass,
-  SerializerConfig
-} from "#types"
