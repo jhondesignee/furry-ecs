@@ -11,6 +11,9 @@ export default class Entity implements SerializableClass<Entity> {
   }
 
   public static recycleEID(EID: number): void {
+    if (typeof EID !== "number" || EID === null) {
+      throw new TypeError("'EID' parameter must be a number")
+    }
     this.recycledEID.add(EID)
   }
 
