@@ -33,11 +33,11 @@ export default class World implements SerializableClass<World | Storage<any>> {
     return this.components.addData(component)
   }
 
-  public addSystem(system: System): boolean {
+  public addSystem(system: System, args?: Array<unknown>): boolean {
     if (this.systems.length(true) >= this.size) {
       return false
     }
-    system.start?.(this)
+    system.start?.(this, args)
     return this.systems.addData(system)
   }
 
@@ -55,8 +55,8 @@ export default class World implements SerializableClass<World | Storage<any>> {
     return this.components.removeData(component)
   }
 
-  public removeSystem(system: System): boolean {
-    system.destroy?.(this)
+  public removeSystem(system: System, args?: Array<unknown>): boolean {
+    system.destroy?.(this, args)
     return this.systems.removeData(system)
   }
 

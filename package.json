@@ -1,8 +1,12 @@
 {
   "name": "furry-ecs",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Furry ECS is a TypeScript Entity-component-system library",
-  "keywords": ["ecs", "typescript", "npm"],
+  "keywords": [
+    "ecs",
+    "typescript",
+    "npm"
+  ],
   "author": "JhonDesignee <jhondesignee@gmail.com>",
   "homepage": "https://github.com/jhondesignee/furry-ecs#readme",
   "repository": "github:jhondesignee/furry-ecs",
@@ -23,7 +27,9 @@
   },
   "types": "./dist/index.d.ts",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "test": "vitest --config vitest.config.ts",

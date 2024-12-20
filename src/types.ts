@@ -3,9 +3,9 @@ import type World from "#world"
 import type Serializer from "#serializer"
 import type { ComponentType, Serializable, QueryOperation } from "#constants"
 
-export type SystemStartFunction = (world: World) => void
+export type SystemStartFunction = (world: World, args?: Array<unknown>) => void
 export type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void
-export type SystemDestroyFunction = (world: World) => void
+export type SystemDestroyFunction = (world: World, args?: Array<unknown>) => void
 export type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER
   ? number
   : T extends ComponentType.ARRAY
