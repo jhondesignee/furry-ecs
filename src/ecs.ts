@@ -58,13 +58,13 @@ export default class ECS {
     return changes
   }
 
-  public static addSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean> {
+  public static addSystem(worlds: World | Array<World>, systems: System | Array<System>, args?: Array<unknown>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
     const systemArray: Array<System> = Array.isArray(systems) ? systems : [systems]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
       for (const system of systemArray) {
-        changes.push(world.addSystem(system))
+        changes.push(world.addSystem(system, args))
       }
     }
     return changes
@@ -94,13 +94,13 @@ export default class ECS {
     return changes
   }
 
-  public static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean> {
+  public static removeSystem(worlds: World | Array<World>, systems: System | Array<System>, args?: Array<unknown>): Array<boolean> {
     const worldArray: Array<World> = Array.isArray(worlds) ? worlds : [worlds]
     const systemArray: Array<System> = Array.isArray(systems) ? systems : [systems]
     const changes: Array<boolean> = new Array()
     for (const world of worldArray) {
       for (const system of systemArray) {
-        changes.push(world.removeSystem(system))
+        changes.push(world.removeSystem(system, args))
       }
     }
     return changes

@@ -92,10 +92,10 @@ declare class World implements SerializableClass<World | Storage<any>> {
     constructor(config?: WorldConfig);
     addEntity(entity: Entity): boolean;
     addComponent(component: Component<any>): boolean;
-    addSystem(system: System): boolean;
+    addSystem(system: System, args?: Array<unknown>): boolean;
     removeEntity(entity: Entity): boolean;
     removeComponent(component: Component<any>): boolean;
-    removeSystem(system: System): boolean;
+    removeSystem(system: System, args?: Array<unknown>): boolean;
     update(delta: number, time: number, args?: Array<unknown>): void;
     destroy(): void;
     private applyChanges;
@@ -118,9 +118,9 @@ declare class Serializer<T, R = SerializedValueType<T>> {
     private deserializeObject;
 }
 
-type SystemStartFunction = (world: World) => void;
+type SystemStartFunction = (world: World, args?: Array<unknown>) => void;
 type SystemUpdateFunction = (world: World, delta: number, time: number, args?: Array<unknown>) => void;
-type SystemDestroyFunction = (world: World) => void;
+type SystemDestroyFunction = (world: World, args?: Array<unknown>) => void;
 type ComponentPropValue<T extends ComponentSchema[keyof ComponentSchema]> = T extends ComponentType.NUMBER ? number : T extends ComponentType.ARRAY ? Array<number> : null;
 type ComponentSchema = Record<string, ComponentType>;
 type ComponentProps<T extends ComponentSchema> = Map<keyof T, Map<number, ComponentPropValue<T[keyof T]>>>;
@@ -227,10 +227,10 @@ declare class ECS {
     static defineSerializer<T, R = SerializedValueType<T>>(serializerConfig?: SerializerConfig<T, R>): Serializer<T, R>;
     static addEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
     static addComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean>;
-    static addSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
+    static addSystem(worlds: World | Array<World>, systems: System | Array<System>, args?: Array<unknown>): Array<boolean>;
     static removeEntity(worlds: World | Array<World>, entities: Entity | Array<Entity>): Array<boolean>;
     static removeComponent(worlds: World | Array<World>, components: Component<any> | Array<Component<any>>): Array<boolean>;
-    static removeSystem(worlds: World | Array<World>, systems: System | Array<System>): Array<boolean>;
+    static removeSystem(worlds: World | Array<World>, systems: System | Array<System>, args?: Array<unknown>): Array<boolean>;
     static attachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
     static detachEntity(components: Component<any> | Array<Component<any>>, entities: Entity | Array<Entity>): Array<boolean>;
     static update(worlds: World | Array<World>, delta: number, time: number, args?: Array<unknown>): void;
