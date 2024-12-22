@@ -17,7 +17,7 @@ export type ComponentPropsObject<T extends ComponentSchema> = { [K in keyof T]: 
 
 export interface SystemConfig {
   start?: SystemStartFunction
-  update: SystemUpdateFunction
+  update?: SystemUpdateFunction
   destroy?: SystemDestroyFunction
 }
 

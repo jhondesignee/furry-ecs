@@ -129,7 +129,7 @@ type ComponentPropsObject<T extends ComponentSchema> = {
 };
 interface SystemConfig {
     start?: SystemStartFunction;
-    update: SystemUpdateFunction;
+    update?: SystemUpdateFunction;
     destroy?: SystemDestroyFunction;
 }
 interface QueryConfig {
